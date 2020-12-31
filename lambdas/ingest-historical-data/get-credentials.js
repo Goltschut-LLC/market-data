@@ -2,15 +2,23 @@ const AWS = require("aws-sdk");
 const { region } = require("./config");
 
 const get = async (secretName) => {
-  const client = new AWS.SecretsManager({
-    region
-  });
+  try {
+    console.log("Get credentials called with:", { secretName });
 
-  const secret = await client
-    .getSecretValue({ SecretId: secretName })
-    .promise();
+    const client = new AWS.SecretsManager({
+      region,
+    });
 
-  return JSON.parse(secret.SecretString);
+    const secret = await client
+      .getSecretValue({ SecretId: secretName })
+      .promise();
+
+    return JSON.parse(secret.SecretString);
+  } catch (error) {
+    console.log("Error encountered during get credentials:", error.message);
+    console.log(error.stack);
+    throw error;
+  }
 };
 
 module.exports = { get };

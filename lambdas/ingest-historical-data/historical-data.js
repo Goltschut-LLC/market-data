@@ -6,8 +6,7 @@ const { alpacaSecretName } = require("./config");
 const Credentials = require("./get-credentials");
 
 const get = async ({ timeframe, symbols, limit, start, end }) => {
-  
-  console.log("get historical-data called with: ", {
+  console.log("Get historical data called with:", {
     timeframe,
     symbols,
     limit,
@@ -16,7 +15,7 @@ const get = async ({ timeframe, symbols, limit, start, end }) => {
   });
 
   const { API_KEY_ID, SECRET_KEY } = await Credentials.get(alpacaSecretName);
-  
+
   const alpaca = new Alpaca({
     keyId: API_KEY_ID,
     secretKey: SECRET_KEY,

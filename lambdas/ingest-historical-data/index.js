@@ -6,13 +6,7 @@ const Credentials = require("./get-credentials");
 exports.handler = async (event) => {
   const { timeframe, symbols, limit, start, end } = event;
 
-  console.log("Handler called with event: ", {
-    timeframe,
-    symbols,
-    limit,
-    start,
-    end,
-  });
+  console.log("Handler called with event:", event);
 
   const barset = await HistoricalData.get({
     timeframe,
