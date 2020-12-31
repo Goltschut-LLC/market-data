@@ -20,7 +20,7 @@ const event = {
     res = await handler(event);
     console.log("res:", JSON.stringify(res));
   } catch (error) {
-    console.log("Error encountered during get credentials:", error.message);
+    console.log("Error encountered during sanity test:", error.message);
     console.log(error.stack);
   }
 })(event);
