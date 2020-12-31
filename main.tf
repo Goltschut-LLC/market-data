@@ -129,10 +129,10 @@ resource "aws_iam_policy_attachment" "ingest_historical_data_lambda_iam_policy_r
 }
 
 resource "aws_lambda_function" "lambda_function" {
-  filename      = "./lambdas/ingest-historical-data/ingest-historical-data.zip"
+  filename      = "./lambdas/ingest-historical-data/dist/ingest-historical-data.zip"
   source_code_hash = "${
     filebase64sha256(
-      file("./lambdas/ingest-historical-data/ingest-historical-data.zip")
+      file("./lambdas/ingest-historical-data/dist/ingest-historical-data.zip")
     )
   }"
   function_name = "ingest-historical-data"
