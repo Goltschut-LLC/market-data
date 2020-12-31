@@ -109,13 +109,13 @@ resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
 }
 
 resource "aws_eip" "eip_a" {
-  vpc   = true
+  vpc = true
 }
 resource "aws_eip" "eip_b" {
-  vpc   = true
+  vpc = true
 }
 resource "aws_eip" "eip_c" {
-  vpc   = true
+  vpc = true
 }
 
 resource "aws_nat_gateway" "nat_gateway_a" {
@@ -154,9 +154,9 @@ resource "aws_iam_policy_attachment" "ingest_historical_data_lambda_iam_policy_r
 }
 
 resource "aws_lambda_function" "lambda_function" {
-  filename      = "./lambdas/ingest-historical-data/dist/ingest-historical-data.zip"
+  filename = "./lambdas/ingest-historical-data/dist/ingest-historical-data.zip"
   source_code_hash = filebase64sha256(
-      "./lambdas/ingest-historical-data/dist/ingest-historical-data.zip"
+    "./lambdas/ingest-historical-data/dist/ingest-historical-data.zip"
   )
   function_name = "ingest-historical-data"
   handler       = "index.handler"
@@ -165,7 +165,7 @@ resource "aws_lambda_function" "lambda_function" {
 
   environment {
     variables = {
-      REGION           = data.aws_region.current.name
+      REGION             = data.aws_region.current.name
       ALPACA_SECRET_NAME = local.alpaca_secret_name
       RDS_SECRET_NAME    = local.rds_secret_name
     }
