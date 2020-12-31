@@ -43,6 +43,18 @@ resource "aws_default_subnet" "default_az_c" {
   availability_zone = "${data.aws_region.current.name}c"
 }
 
+resource "aws_default_subnet" "default_az_d" {
+  availability_zone = "${data.aws_region.current.name}d"
+}
+
+resource "aws_default_subnet" "default_az_e" {
+  availability_zone = "${data.aws_region.current.name}e"
+}
+
+resource "aws_default_subnet" "default_az_f" {
+  availability_zone = "${data.aws_region.current.name}f"
+}
+
 resource "aws_default_security_group" "default_sg" {
   vpc_id = aws_default_vpc.default_vpc.id
 
@@ -108,21 +120,21 @@ resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
   private_dns_enabled = true
 }
 
-resource "aws_eip" "eip_a" {
+resource "aws_eip" "eip" {
   vpc = true
 }
 
-resource "aws_nat_gateway" "nat_gateway_a" {
-  allocation_id = aws_eip.eip_a.id
-  subnet_id     = aws_default_subnet.default_az_a.id
+resource "aws_nat_gateway" "nat_gateway" {
+  allocation_id = aws_eip.eip.id
+  subnet_id     = aws_default_subnet.default_az_d.id
 }
 
-resource "aws_route_table" "nat_gateway_route_table_a" {
+resource "aws_route_table" "nat_gateway_route_table" {
   vpc_id = aws_default_vpc.default_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway_a.id
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
 }
 
@@ -131,44 +143,9 @@ resource "aws_route_table_association" "route_association_a" {
   route_table_id = aws_route_table.nat_gateway_route_table_a.id
 }
 
-resource "aws_eip" "eip_b" {
-  vpc = true
-}
-
-resource "aws_nat_gateway" "nat_gateway_b" {
-  allocation_id = aws_eip.eip_b.id
-  subnet_id     = aws_default_subnet.default_az_b.id
-}
-
-resource "aws_route_table" "nat_gateway_route_table_b" {
-  vpc_id = aws_default_vpc.default_vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway_b.id
-  }
-}
-
 resource "aws_route_table_association" "route_association_b" {
   subnet_id      = aws_default_subnet.default_az_b.id
   route_table_id = aws_route_table.nat_gateway_route_table_b.id
-}
-
-resource "aws_eip" "eip_c" {
-  vpc = true
-}
-resource "aws_nat_gateway" "nat_gateway_c" {
-  allocation_id = aws_eip.eip_c.id
-  subnet_id     = aws_default_subnet.default_az_c.id
-}
-
-resource "aws_route_table" "nat_gateway_route_table_c" {
-  vpc_id = aws_default_vpc.default_vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway_c.id
-  }
 }
 
 resource "aws_route_table_association" "route_association_c" {
