@@ -153,6 +153,12 @@ resource "aws_iam_policy_attachment" "ingest_historical_data_lambda_iam_policy_r
   policy_arn = aws_iam_policy.ingest_historical_data_lambda_iam_policy.arn
 }
 
+resource "aws_iam_policy_attachment" "lambda_vpc_access_iam_policy_role_attachment" {
+  name       = "lambda-vpc-access-policy-attachment"
+  roles      = [aws_iam_role.ingest_historical_data_lambda_role.name]
+  policy_arn = data.aws_iam_policy.AWSLambdaVPCAccessExecutionRole.arn
+}
+
 resource "aws_lambda_function" "lambda_function" {
   filename = "./lambdas/ingest-historical-data/dist/ingest-historical-data.zip"
   source_code_hash = filebase64sha256(

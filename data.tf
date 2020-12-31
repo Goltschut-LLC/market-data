@@ -53,3 +53,7 @@ data "aws_iam_policy_document" "ingest_historical_data_lambda_iam_policy" {
     ]
   }
 }
+
+data "aws_iam_policy" "AWSLambdaVPCAccessExecutionRole" {
+  arn = "arn:aws:iam::aws:policy/AWSLambdaVPCAccessExecutionRole"
+}
