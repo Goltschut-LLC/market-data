@@ -5,6 +5,14 @@
 data "aws_region" "current" {}
 
 ##################################################################################
+# Networking
+##################################################################################
+
+data "aws_vpc_endpoint_service" "secretsmanager" {
+  service = "secretsmanager"
+}
+
+##################################################################################
 # Secrets Manager
 ##################################################################################
 
@@ -30,7 +38,7 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_iam_policy" {
+data "aws_iam_policy_document" "ingest_historical_data_lambda_iam_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -38,6 +46,7 @@ data "aws_iam_policy_document" "lambda_iam_policy" {
       "logs:*",
       "rds:*",
       "ec2:*",
+      "secretsmanager:*",
     ]
     resources = [
       "*",
