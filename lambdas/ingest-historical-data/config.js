@@ -1,5 +1,7 @@
-const region = "us-east-1";
-const alpacaSecretName = "alpaca";
-const rdsSecretName = "rds-main";
+const { REGION, ALPACA_SECRET_NAME, RDS_SECRET_NAME } = process.env;
 
-module.exports = { region, alpacaSecretName, rdsSecretName };
+module.exports = {
+    region: REGION,
+    alpacaSecretName: ALPACA_SECRET_NAME,
+    rdsSecretName: RDS_SECRET_NAME
+};
