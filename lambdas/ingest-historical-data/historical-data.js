@@ -6,30 +6,36 @@ const { alpacaSecretName } = require("./config");
 const Credentials = require("./get-credentials");
 
 const get = async ({ timeframe, symbols, limit, start, end }) => {
-  console.log("Get historical data called with:", {
-    timeframe,
-    symbols,
-    limit,
-    start,
-    end,
-  });
+  try {
+    console.log("Get historical data called with:", {
+      timeframe,
+      symbols,
+      limit,
+      start,
+      end,
+    });
 
-  const { API_KEY_ID, SECRET_KEY } = await Credentials.get(alpacaSecretName);
+    const { API_KEY_ID, SECRET_KEY } = await Credentials.get(alpacaSecretName);
 
-  const alpaca = new Alpaca({
-    keyId: API_KEY_ID,
-    secretKey: SECRET_KEY,
-    paper: true,
-    usePolygon: false,
-  });
+    const alpaca = new Alpaca({
+      keyId: API_KEY_ID,
+      secretKey: SECRET_KEY,
+      paper: true,
+      usePolygon: false,
+    });
 
-  const barset = await alpaca.getBars(timeframe, symbols.join(","), {
-    limit,
-    start,
-    end,
-  });
+    const barset = await alpaca.getBars(timeframe, symbols.join(","), {
+      limit,
+      start,
+      end,
+    });
 
-  return { timeframe, start, end, symbols: barset };
+    return { timeframe, start, end, symbols: barset };
+  } catch (error) {
+    console.log("Error encountered during get historical data:", error.message);
+    console.log(error.stack);
+    throw error;
+  }
 };
 
 module.exports = { get };
