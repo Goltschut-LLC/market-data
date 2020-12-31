@@ -1,5 +1,2 @@
-# TODO
-Fill in more details.
-
-# Notes
-- Secrets manager must be manually populated for Terraform to work.# market-data
+# IMPORTANT
+Secrets manager values must already exist, as they are not created by this Terraform stack.

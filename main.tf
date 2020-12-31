@@ -10,7 +10,17 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.region
+}
+
+#################################################################################################
+# Consts
+#   Calling special attention here due to hardcoded nature of values
+#################################################################################################
+
+locals {
+  alpaca_secret_name = "alpaca"
+  rds_secret_name    = "rds"
 }
 
 #################################################################################################
@@ -88,7 +98,7 @@ resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
     aws_default_subnet.default_az_b.id,
     aws_default_subnet.default_az_c.id
   ]
-  service_name      = "com.amazonaws.us-east-1.secretsmanager"
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.secretsmanager"
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [
@@ -120,6 +130,11 @@ resource "aws_iam_policy_attachment" "ingest_historical_data_lambda_iam_policy_r
 
 resource "aws_lambda_function" "lambda_function" {
   filename      = "./lambdas/ingest-historical-data/ingest-historical-data.zip"
+  source_code_hash = base64sha256(
+    file(
+      "/lambdas/ingest-historical-data/ingest-historical-data.zip"
+    )
+  )
   function_name = "ingest-historical-data"
   handler       = "index.handler"
   role          = aws_iam_role.ingest_historical_data_lambda_role.arn
@@ -127,7 +142,9 @@ resource "aws_lambda_function" "lambda_function" {
 
   environment {
     variables = {
-      test = "value"
+      REGION           = data.aws_region.current.name
+      ALPACA_SECRET_NAME = local.alpaca_secret_name
+      RDS_SECRET_NAME    = local.rds_secret_name
     }
   }
 
