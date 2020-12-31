@@ -118,7 +118,7 @@ resource "aws_nat_gateway" "nat_gateway_a" {
 }
 
 resource "aws_route_table" "nat_gateway_route_table_a" {
-  vpc_id = aws_vpc.default.id
+  vpc_id = aws_default_vpc.default_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -141,7 +141,7 @@ resource "aws_nat_gateway" "nat_gateway_b" {
 }
 
 resource "aws_route_table" "nat_gateway_route_table_b" {
-  vpc_id = aws_vpc.default.id
+  vpc_id = aws_default_vpc.default_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -163,7 +163,7 @@ resource "aws_nat_gateway" "nat_gateway_c" {
 }
 
 resource "aws_route_table" "nat_gateway_route_table_c" {
-  vpc_id = aws_vpc.default.id
+  vpc_id = aws_default_vpc.default_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
