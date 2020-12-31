@@ -111,16 +111,28 @@ resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
 resource "aws_eip" "eip_a" {
   vpc = true
 }
-resource "aws_eip" "eip_b" {
-  vpc = true
-}
-resource "aws_eip" "eip_c" {
-  vpc = true
-}
 
 resource "aws_nat_gateway" "nat_gateway_a" {
   allocation_id = aws_eip.eip_a.id
   subnet_id     = aws_default_subnet.default_az_a.id
+}
+
+resource "aws_route_table" "nat_gateway_route_table_a" {
+  vpc_id = aws_vpc.default.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway_a.id
+  }
+}
+
+resource "aws_route_table_association" "route_association_a" {
+  subnet_id      = aws_default_subnet.default_az_a.id
+  route_table_id = aws_route_table.nat_gateway_route_table_a.id
+}
+
+resource "aws_eip" "eip_b" {
+  vpc = true
 }
 
 resource "aws_nat_gateway" "nat_gateway_b" {
@@ -128,9 +140,40 @@ resource "aws_nat_gateway" "nat_gateway_b" {
   subnet_id     = aws_default_subnet.default_az_b.id
 }
 
+resource "aws_route_table" "nat_gateway_route_table_b" {
+  vpc_id = aws_vpc.default.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway_b.id
+  }
+}
+
+resource "aws_route_table_association" "route_association_b" {
+  subnet_id      = aws_default_subnet.default_az_b.id
+  route_table_id = aws_route_table.nat_gateway_route_table_b.id
+}
+
+resource "aws_eip" "eip_c" {
+  vpc = true
+}
 resource "aws_nat_gateway" "nat_gateway_c" {
   allocation_id = aws_eip.eip_c.id
   subnet_id     = aws_default_subnet.default_az_c.id
+}
+
+resource "aws_route_table" "nat_gateway_route_table_c" {
+  vpc_id = aws_vpc.default.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway_c.id
+  }
+}
+
+resource "aws_route_table_association" "route_association_c" {
+  subnet_id      = aws_default_subnet.default_az_c.id
+  route_table_id = aws_route_table.nat_gateway_route_table_c.id
 }
 
 #################################################################################################
