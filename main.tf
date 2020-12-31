@@ -132,7 +132,7 @@ resource "aws_lambda_function" "lambda_function" {
   filename      = "./lambdas/ingest-historical-data/ingest-historical-data.zip"
   source_code_hash = base64sha256(
     file(
-      "/lambdas/ingest-historical-data/ingest-historical-data.zip"
+      "./lambdas/ingest-historical-data/ingest-historical-data.zip"
     )
   )
   function_name = "ingest-historical-data"
