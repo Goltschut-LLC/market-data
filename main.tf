@@ -108,6 +108,31 @@ resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
   private_dns_enabled = true
 }
 
+resource "aws_eip" "eip_a" {
+  vpc   = true
+}
+resource "aws_eip" "eip_b" {
+  vpc   = true
+}
+resource "aws_eip" "eip_c" {
+  vpc   = true
+}
+
+resource "aws_nat_gateway" "nat_gateway_a" {
+  allocation_id = aws_eip.eip_a.id
+  subnet_id     = aws_default_subnet.default_az_a.id
+}
+
+resource "aws_nat_gateway" "nat_gateway_b" {
+  allocation_id = aws_eip.eip_b.id
+  subnet_id     = aws_default_subnet.default_az_b.id
+}
+
+resource "aws_nat_gateway" "nat_gateway_c" {
+  allocation_id = aws_eip.eip_c.id
+  subnet_id     = aws_default_subnet.default_az_c.id
+}
+
 #################################################################################################
 # Lambda
 #################################################################################################
