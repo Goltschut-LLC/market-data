@@ -17,13 +17,28 @@ exports.handler = async (event) => {
     end,
   });
 
+  console.log("Parsing historical data values");
+  let values = [];
+  Object.keys(barset.symbols).forEach((symbol) => {
+    const bars = barset.symbols[symbol];
+    values.push(
+      ...bars.map((bar) => [
+        timeframe,
+        symbol,
+        new Date(bar.startEpochTime * 1000).toISOString(),
+        bar.openPrice,
+        bar.highPrice,
+        bar.lowPrice,
+        bar.closePrice,
+        bar.volume,
+      ])
+    );
+  });
+
   console.log("Getting RDS credentials");
-  const {
-    host,
-    user,
-    password,
-    dbClusterIdentifier: database,
-  } = await Credentials.get(rdsSecretName);
+  const { host, user, password, database } = await Credentials.get(
+    rdsSecretName
+  );
 
   console.log("Connecting to RDS cluster");
   const conn = await mysql.createConnection({
@@ -34,26 +49,40 @@ exports.handler = async (event) => {
     connectTimeout: 30 * 1000,
   });
 
-  console.log("Performing query execution");
+  console.log("Creating us_bars table if not exists");
   await conn.execute(
     [
-      `CREATE TABLE IF NOT EXISTS market.us_bars (`,
+      "CREATE TABLE IF NOT EXISTS us_bars (",
       "  timeframe VARCHAR(10),",
       "  symbol VARCHAR(20),",
       "  start_time DATETIME,",
-      "  openPrice float(9,2),",
-      "  highPrice float(9,2),",
-      "  lowPrice float(9,2),",
-      "  closePrice float(9,2),",
+      "  open_price float(9,2),",
+      "  high_price float(9,2),",
+      "  low_price float(9,2),",
+      "  close_price float(9,2),",
       "  volume INT,",
       "  primary key (timeframe, symbol, start_time)",
       ");",
     ].join("")
   );
 
-  const [rows, fields] = await conn.execute("SELECT * FROM market.us_bars;");
+  console.log("Loading historical data values");
+  await conn.query(
+    [
+      "REPLACE INTO us_bars (",
+      "  timeframe,",
+      "  symbol,",
+      "  start_time,",
+      "  open_price,",
+      "  high_price,",
+      "  low_price,",
+      "  close_price,",
+      "  volume",
+      ") VALUES ?",
+    ].join(""),
+    [values]
+  );
 
-  console.log("Results:", JSON.stringify({ rows, fields }));
-
+  console.log("Closing RDS connection");
   await conn.end();
 };
