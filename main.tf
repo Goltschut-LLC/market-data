@@ -77,6 +77,15 @@ resource "aws_default_security_group" "default_sg" {
 # Database
 #################################################################################################
 
+resource "aws_db_subnet_group" "private_db_subnet_group" {
+  name       = "private"
+  subnet_ids = [
+    aws_default_subnet.default_az_a.id,
+    aws_default_subnet.default_az_b.id,
+    aws_default_subnet.default_az_c.id
+  ]
+}
+
 resource "aws_rds_cluster" "rds_cluster" {
   cluster_identifier = "aurora-cluster"
   engine             = "aurora"
@@ -85,6 +94,7 @@ resource "aws_rds_cluster" "rds_cluster" {
     "${data.aws_region.current.name}b",
     "${data.aws_region.current.name}c"
   ]
+  db_subnet_group_name = aws_db_subnet_group.private_db_subnet_group.name
   database_name = "market"
   master_username = jsondecode(
     data.aws_secretsmanager_secret_version.rds_secret_value.secret_string
@@ -97,6 +107,7 @@ resource "aws_rds_cluster" "rds_cluster" {
     min_capacity = var.rds_min_capacity
     max_capacity = var.rds_max_capacity
   }
+  skip_final_snapshot  = true
 }
 
 #################################################################################################
@@ -129,6 +140,12 @@ resource "aws_nat_gateway" "nat_gateway" {
   subnet_id     = aws_default_subnet.default_az_d.id
 }
 
+###################################################
+# Warning: Route values below convert three of
+#   the default public (IGW) subnets into
+#   private ones. Proceed cautiously when changing.
+###################################################
+
 resource "aws_route_table" "nat_gateway_route_table" {
   vpc_id = aws_default_vpc.default_vpc.id
 
@@ -140,17 +157,17 @@ resource "aws_route_table" "nat_gateway_route_table" {
 
 resource "aws_route_table_association" "route_association_a" {
   subnet_id      = aws_default_subnet.default_az_a.id
-  route_table_id = aws_route_table.nat_gateway_route_table_a.id
+  route_table_id = aws_route_table.nat_gateway_route_table.id
 }
 
 resource "aws_route_table_association" "route_association_b" {
   subnet_id      = aws_default_subnet.default_az_b.id
-  route_table_id = aws_route_table.nat_gateway_route_table_b.id
+  route_table_id = aws_route_table.nat_gateway_route_table.id
 }
 
 resource "aws_route_table_association" "route_association_c" {
   subnet_id      = aws_default_subnet.default_az_c.id
-  route_table_id = aws_route_table.nat_gateway_route_table_c.id
+  route_table_id = aws_route_table.nat_gateway_route_table.id
 }
 
 #################################################################################################
