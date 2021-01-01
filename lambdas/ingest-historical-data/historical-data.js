@@ -7,7 +7,6 @@ const Credentials = require("./get-credentials");
 
 const get = async ({ timeframe, symbols, limit, start, end }) => {
   try {
-
     const { API_KEY_ID, SECRET_KEY } = await Credentials.get(alpacaSecretName);
 
     const alpaca = new Alpaca({

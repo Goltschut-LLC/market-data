@@ -3,15 +3,14 @@ const { region } = require("./config");
 
 const get = async (secretName) => {
   try {
-    
     const client = new AWS.SecretsManager({
       region,
     });
-    
+
     const secret = await client
-    .getSecretValue({ SecretId: secretName })
-    .promise();
-    
+      .getSecretValue({ SecretId: secretName })
+      .promise();
+
     return JSON.parse(secret.SecretString);
   } catch (error) {
     console.log("Error encountered during get credentials:", error.message);
