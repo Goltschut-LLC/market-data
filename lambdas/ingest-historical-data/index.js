@@ -7,7 +7,8 @@ exports.handler = async (event) => {
   const { timeframe, symbols, limit, start, end } = event;
 
   console.log("Handler called with event:", event);
-
+  
+  console.log("Getting historical data");
   const barset = await HistoricalData.get({
     timeframe,
     symbols,
@@ -15,43 +16,29 @@ exports.handler = async (event) => {
     start,
     end,
   });
+  
+  console.log("Getting RDS credentials");
+  const {
+    host,
+    username: user,
+    password,
+    dbClusterIdentifier: database,
+  } = await Credentials.get(rdsSecretName);
+  
+  const client = new Client({
+    host,
+    user,
+    password,
+    database,
+  });
+  
+  console.log("Connecting to RDS cluster");
+  await client.connect();
+  
+  const text = "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'; ";
+  
+  console.log("Executing query");
+  const res = await client.query(text);
+  console.log("DB response:", res);
 
-  // const {
-  //   host,
-  //   username: user,
-  //   password,
-  //   dbClusterIdentifier: database,
-  // } = await Credentials.get(rdsSecretName);
-
-  console.log(
-    JSON.stringify(
-      {
-        barset,
-        // host,
-        // user,
-        // password,
-        // database,
-      },
-      false,
-      2
-    )
-  );
-
-  // const client = new Client({
-  //   host,
-  //   user,
-  //   password,
-  //   database,
-  // });
-
-  // await client.connect();
-
-  // const text = "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'; ";
-
-  // try {
-  //   const res = await client.query(text);
-  //   console.log(res);
-  // } catch (err) {
-  //   console.log(err.stack);
-  // }
 };
