@@ -199,6 +199,7 @@ resource "aws_lambda_function" "lambda_function" {
   handler       = "index.handler"
   role          = aws_iam_role.ingest_historical_data_lambda_role.arn
   runtime       = "nodejs12.x"
+  timeout       = 30
 
   environment {
     variables = {
