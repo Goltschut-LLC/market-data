@@ -31,14 +31,29 @@ exports.handler = async (event) => {
     user,
     password,
     database,
-    connectTimeout: 30 * 1000
+    connectTimeout: 30 * 1000,
   });
-  
-  console.log("Executing query");
-  const [rows, fields] = await conn.execute(
-    "SHOW DATABASES;"
+
+  console.log("Performing query execution");
+  await conn.execute(
+    [
+      `CREATE TABLE IF NOT EXISTS market.us_bars (`,
+      "  timeframe VARCHAR(10),",
+      "  symbol VARCHAR(20),",
+      "  start_time DATETIME,",
+      "  openPrice float(9,2),",
+      "  highPrice float(9,2),",
+      "  lowPrice float(9,2),",
+      "  closePrice float(9,2),",
+      "  volume INT,",
+      "  primary key (timeframe, symbol, start_time)",
+      ");",
+    ].join("")
   );
-  console.log("Results:", JSON.stringify(rows, fields));
-  
+
+  const [rows, fields] = await conn.execute("SELECT * FROM market.us_bars;");
+
+  console.log("Results:", JSON.stringify({ rows, fields }));
+
   await conn.end();
 };
