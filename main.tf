@@ -13,6 +13,8 @@ provider "aws" {
   region = var.region
 }
 
+data "aws_region" "current" {}
+
 #################################################################################################
 # Consts
 #   Calling special attention here due to hardcoded nature of values
@@ -76,6 +78,15 @@ resource "aws_default_security_group" "default_sg" {
 #################################################################################################
 # Database
 #################################################################################################
+
+# Secrets Manager
+data "aws_secretsmanager_secret" "rds_secret" {
+  name = "rds"
+}
+
+data "aws_secretsmanager_secret_version" "rds_secret_value" {
+  secret_id = data.aws_secretsmanager_secret.rds_secret.id
+}
 
 resource "aws_db_subnet_group" "private_db_subnet_group" {
   name       = "private"
@@ -173,22 +184,6 @@ resource "aws_route_table_association" "route_association_c" {
 #################################################################################################
 # Lambda
 #################################################################################################
-
-resource "aws_iam_policy" "ingest_historical_data_lambda_iam_policy" {
-  name   = "ingest-historical-data-lambda-policy"
-  policy = data.aws_iam_policy_document.ingest_historical_data_lambda_iam_policy.json
-}
-
-resource "aws_iam_role" "ingest_historical_data_lambda_role" {
-  name               = "ingest-historical-data-lambda-role"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
-}
-
-resource "aws_iam_policy_attachment" "ingest_historical_data_lambda_iam_policy_role_attachment" {
-  name       = "ingest-historical-data-lambda-policy-attachment"
-  roles      = [aws_iam_role.ingest_historical_data_lambda_role.name]
-  policy_arn = aws_iam_policy.ingest_historical_data_lambda_iam_policy.arn
-}
 
 resource "aws_lambda_function" "lambda_function" {
   filename = "./lambdas/ingest-historical-data/dist/ingest-historical-data.zip"
