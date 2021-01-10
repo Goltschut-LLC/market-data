@@ -7,7 +7,7 @@ resource "aws_rds_cluster" "rds_cluster" {
     "${data.aws_region.current.name}c"
   ]
   db_subnet_group_name = aws_db_subnet_group.private_db_subnet_group.name
-  database_name        = "market"
+  database_name        = var.rds_database_name
   master_username      = var.rds_username
   master_password      = random_password.rds_password.result
   engine_mode          = "serverless"
