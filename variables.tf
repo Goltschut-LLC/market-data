@@ -13,3 +13,11 @@ variable "rds_min_capacity" {
 variable "rds_max_capacity" {
   default = 2
 }
+
+variable "rds_secret_name" {
+  default = "rds"
+}
+
+variable "alpaca_secret_name" {
+  default = "alpaca"
+}
