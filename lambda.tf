@@ -18,11 +18,7 @@ resource "aws_lambda_function" "lambda_function" {
   }
 
   vpc_config {
-    subnet_ids = [
-      aws_default_subnet.default_az_a.id,
-      aws_default_subnet.default_az_b.id,
-      aws_default_subnet.default_az_c.id
-    ]
-    security_group_ids = [aws_default_security_group.default_sg.id]
+    subnet_ids         = aws_subnet.private_subnets.*.id
+    security_group_ids = [aws_security_group.main_sg.id]
   }
 }

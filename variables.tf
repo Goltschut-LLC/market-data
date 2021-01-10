@@ -6,6 +6,10 @@ variable "region" {
   default = "us-east-1"
 }
 
+variable "max_az_count" {
+  default = 8
+}
+
 variable "rds_min_capacity" {
   default = 1
 }
