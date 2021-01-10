@@ -8,7 +8,7 @@ resource "aws_nat_gateway" "nat_gateway" {
 }
 
 resource "aws_db_subnet_group" "private_db_subnet_group" {
-  name       = "private"
+  name = "private"
   subnet_ids = [
     aws_default_subnet.default_az_a.id,
     aws_default_subnet.default_az_b.id,
@@ -43,7 +43,7 @@ resource "aws_route_table" "nat_gateway_route_table" {
   vpc_id = aws_default_vpc.default_vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
 }
