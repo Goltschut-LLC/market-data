@@ -121,14 +121,23 @@ resource "aws_db_subnet_group" "private_db_subnet_group" {
 }
 
 resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
-  vpc_id            = aws_vpc.main.id
-  subnet_ids        = aws_subnet.private_subnets.*.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.secretsmanager"
-  vpc_endpoint_type = "Interface"
+  vpc_id              = aws_vpc.main.id
+  subnet_ids          = aws_subnet.private_subnets.*.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.secretsmanager"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
 
   security_group_ids = [
     aws_security_group.main_sg.id,
   ]
+}
 
-  private_dns_enabled = true
+resource "aws_acm_certificate" "acm_cert" {
+  domain_name               = "gomfd.com"
+  subject_alternative_names = ["*.gomfd.com"]
+  validation_method         = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

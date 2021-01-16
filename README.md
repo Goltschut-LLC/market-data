@@ -1,5 +1,5 @@
 # IMPORTANT
-Secrets manager values must be separately maintained, as they are not created by this Terraform stack.
+Alpaca secrets manager values must be separately maintained, as they are not created by this Terraform stack.
 
 ## Getting started
 ```
