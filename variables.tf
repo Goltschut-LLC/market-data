@@ -33,3 +33,15 @@ variable "rds_secret_name" {
 variable "alpaca_secret_name" {
   default = "alpaca"
 }
+
+variable "ecs_service_desired_count" {
+  default = 1
+}
+
+variable "ecs_task_cpu" {
+  default = 256
+}
+
+variable "ecs_task_memory" {
+  default = 512
+}

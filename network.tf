@@ -15,14 +15,14 @@ locals {
 # VPC and Subnets
 ##################################################################################
 
-resource "aws_vpc" "main" {
+resource "aws_vpc" "main_vpc" {
   cidr_block           = "10.0.0.0/20"
   enable_dns_hostnames = true
 }
 
 resource "aws_subnet" "public_subnets" {
   count                   = local.az_count
-  vpc_id                  = aws_vpc.main.id
+  vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.${count.index}.0/24"
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
@@ -30,7 +30,7 @@ resource "aws_subnet" "public_subnets" {
 
 resource "aws_subnet" "private_subnets" {
   count                   = local.az_count
-  vpc_id                  = aws_vpc.main.id
+  vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.${count.index + var.max_az_count - 1}.0/24"
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
@@ -40,18 +40,18 @@ resource "aws_subnet" "private_subnets" {
 # Gateways
 ##################################################################################
 
-resource "aws_internet_gateway" "main_gateway" {
-  vpc_id = aws_vpc.main.id
+resource "aws_internet_gateway" "main_igw" {
+  vpc_id = aws_vpc.main_vpc.id
 }
 
 resource "aws_eip" "eip" {
   vpc = true
 }
 
-resource "aws_nat_gateway" "nat_gateway" {
+resource "aws_nat_gateway" "main_ngw" {
   allocation_id = aws_eip.eip.id
   subnet_id     = aws_subnet.public_subnets[0].id
-  depends_on    = [aws_internet_gateway.main_gateway]
+  depends_on    = [aws_internet_gateway.main_igw]
 }
 
 ##################################################################################
@@ -59,11 +59,11 @@ resource "aws_nat_gateway" "nat_gateway" {
 ##################################################################################
 
 resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main_gateway.id
+    gateway_id = aws_internet_gateway.main_igw.id
   }
 }
 
@@ -74,11 +74,11 @@ resource "aws_route_table_association" "public_route_association" {
 }
 
 resource "aws_route_table" "private_route_table" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+    nat_gateway_id = aws_nat_gateway.main_ngw.id
   }
 }
 
@@ -93,7 +93,8 @@ resource "aws_route_table_association" "private_route_association" {
 ##################################################################################
 
 resource "aws_security_group" "main_sg" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main_vpc.id
+  name   = "main"
 
   ingress {
     protocol  = -1
@@ -110,6 +111,117 @@ resource "aws_security_group" "main_sg" {
   }
 }
 
+resource "aws_security_group" "ingress_http" {
+  name   = "ingress-http"
+  vpc_id = aws_vpc.main_vpc.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "ingress_https" {
+  name   = "ingress-https"
+  vpc_id = aws_vpc.main_vpc.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "egress_all" {
+  name   = "egress-all"
+  vpc_id = aws_vpc.main_vpc.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "ingress_app" {
+  name   = "ingress-app"
+  vpc_id = aws_vpc.main_vpc.id
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+##################################################################################
+# ALB
+##################################################################################
+
+resource "aws_alb" "main_alb" {
+  name               = "main"
+  load_balancer_type = "application"
+  internal           = false
+
+  subnets = aws_subnet.public_subnets.*.id
+
+  security_groups = [
+    aws_security_group.ingress_http.id,
+    aws_security_group.ingress_https.id,
+    aws_security_group.egress_all.id,
+  ]
+
+  depends_on = [aws_internet_gateway.main_igw]
+}
+
+resource "aws_lb_target_group" "main_alb_target_group" {
+  name        = "main"
+  port        = 3000
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  health_check {
+    enabled = true
+    path    = "/health"
+  }
+
+  depends_on = [aws_alb.main_alb]
+}
+
+resource "aws_alb_listener" "http_alb_listener" {
+  load_balancer_arn = aws_alb.main_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_alb_listener" "https_alb_listener" {
+  load_balancer_arn = aws_alb.main_alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate.acm_cert.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main_alb_target_group.arn
+  }
+}
+
 ##################################################################################
 # Miscellaneous
 ##################################################################################
@@ -121,7 +233,7 @@ resource "aws_db_subnet_group" "private_db_subnet_group" {
 }
 
 resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
-  vpc_id              = aws_vpc.main.id
+  vpc_id              = aws_vpc.main_vpc.id
   subnet_ids          = aws_subnet.private_subnets.*.id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.secretsmanager"
   vpc_endpoint_type   = "Interface"
