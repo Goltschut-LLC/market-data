@@ -222,6 +222,32 @@ resource "aws_alb_listener" "https_alb_listener" {
   }
 }
 
+resource "aws_lb_listener_rule" "authenticate_alb_listener_rule" {
+  listener_arn = aws_alb_listener.https_alb_listener.arn
+
+  action {
+    type = "authenticate-cognito"
+
+    authenticate_cognito {
+      user_pool_arn       = aws_cognito_user_pool.main_user_pool.arn
+      user_pool_client_id = aws_cognito_user_pool_client.main_user_pool_client.id
+      user_pool_domain    = aws_cognito_user_pool_domain.main_user_pool_domain.domain
+    }
+  }
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main_alb_target_group.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/*"]
+    }
+  }
+
+}
+
 ##################################################################################
 # Miscellaneous
 ##################################################################################
