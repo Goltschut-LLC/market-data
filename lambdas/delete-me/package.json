@@ -1,8 +1,6 @@
 {
   "name": "delete-me",
   "version": "0.0.1",
-  "description": "Function for initial setup of database tables.",
-  "main": "getHistoricalData.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write \"**/*.js\""

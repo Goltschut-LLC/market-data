@@ -1,8 +1,7 @@
 {
-  "name": "ingest-historical-data",
+  "name": "ingest-aggregate-observations",
   "version": "0.0.1",
   "description": "Function for obtaining historical market data from Alpaca.",
-  "main": "getHistoricalData.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write \"**/*.js\""

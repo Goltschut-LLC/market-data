@@ -35,6 +35,18 @@ exports.handler = async (event) => {
     ].join("")
   );
 
+  console.log("Creating symbols table if not exists");
+  await conn.execute(
+    [
+      "CREATE TABLE IF NOT EXISTS symbols (",
+      "  symbol VARCHAR(20),",
+      "  exchange VARCHAR(20),",
+      "  status VARCHAR(20),",
+      "  primary key (symbol, exchange)",
+      ");",
+    ].join("")
+  );
+
   console.log("Closing RDS connection");
   await conn.end();
 };
