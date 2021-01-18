@@ -44,6 +44,38 @@ resource "aws_iam_policy_attachment" "ingest_historical_data_lambda_iam_policy_r
   policy_arn = aws_iam_policy.ingest_historical_data_lambda_iam_policy.arn
 }
 
+data "aws_iam_policy_document" "create_tables_lambda_iam_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:*",
+      "logs:*",
+      "rds:*",
+      "ec2:*",
+      "secretsmanager:*"
+    ]
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "create_tables_lambda_iam_policy" {
+  name   = "create-tables-lambda-policy"
+  policy = data.aws_iam_policy_document.create_tables_lambda_iam_policy.json
+}
+
+resource "aws_iam_role" "create_tables_lambda_role" {
+  name               = "create-tables-lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "create_tables_lambda_iam_policy_role_attachment" {
+  name       = "create-tables-lambda-policy-attachment"
+  roles      = [aws_iam_role.create_tables_lambda_role.name]
+  policy_arn = aws_iam_policy.create_tables_lambda_iam_policy.arn
+}
+
 ##################################################################################
 # ECS
 ##################################################################################

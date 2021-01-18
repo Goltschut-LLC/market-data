@@ -49,27 +49,10 @@ exports.handler = async (event) => {
     connectTimeout: 30 * 1000,
   });
 
-  console.log("Creating us_bars table if not exists");
-  await conn.execute(
-    [
-      "CREATE TABLE IF NOT EXISTS us_bars (",
-      "  timeframe VARCHAR(10),",
-      "  symbol VARCHAR(20),",
-      "  start_time DATETIME,",
-      "  open_price float(9,2),",
-      "  high_price float(9,2),",
-      "  low_price float(9,2),",
-      "  close_price float(9,2),",
-      "  volume INT,",
-      "  primary key (timeframe, symbol, start_time)",
-      ");",
-    ].join("")
-  );
-
   console.log("Loading historical data values");
   await conn.query(
     [
-      "REPLACE INTO us_bars (",
+      "REPLACE INTO aggregate_observations (",
       "  timeframe,",
       "  symbol,",
       "  start_time,",

@@ -271,8 +271,8 @@ resource "aws_vpc_endpoint" "secrets_manager_vpc_endpoint" {
 }
 
 resource "aws_acm_certificate" "acm_cert" {
-  domain_name               = "gomfd.com"
-  subject_alternative_names = ["*.gomfd.com"]
+  domain_name               = var.domain_name
+  subject_alternative_names = ["*.${var.domain_name}"]
   validation_method         = "DNS"
 
   lifecycle {

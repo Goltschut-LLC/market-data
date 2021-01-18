@@ -2,6 +2,14 @@ variable "env" {
   type = string
 }
 
+variable "project_name" {
+  type = string
+}
+
+variable "domain_name" {
+  type = string
+}
+
 variable "region" {
   default = "us-east-1"
 }
@@ -23,7 +31,7 @@ variable "rds_username" {
 }
 
 variable "rds_database_name" {
-  default = "market"
+  default = "us_stock_market"
 }
 
 variable "rds_secret_name" {

@@ -1,9 +1,9 @@
 resource "aws_cognito_user_pool" "main_user_pool" {
-  name = "main-user-pool"
+  name = "main"
 }
 
 resource "aws_cognito_user_pool_client" "main_user_pool_client" {
-  name                                 = "main-user-pool-client"
+  name                                 = "main"
   user_pool_id                         = aws_cognito_user_pool.main_user_pool.id
   generate_secret                      = true
   allowed_oauth_flows_user_pool_client = true
@@ -14,6 +14,6 @@ resource "aws_cognito_user_pool_client" "main_user_pool_client" {
 }
 
 resource "aws_cognito_user_pool_domain" "main_user_pool_domain" {
-  domain       = "main-user-pool-domain"
+  domain       = "${var.env}-${var.project_name}"
   user_pool_id = aws_cognito_user_pool.main_user_pool.id
 }
