@@ -1,8 +1,28 @@
-# IMPORTANT
-Alpaca secrets manager values must be separately maintained, as they are not created by this Terraform stack.
+# Getting started
 
-## Getting started
+1. Create S3 bucket for storing TF state
+2. Update scripts/deploy.sh with S3 state bucket
+3. Create variables/env-name.tfvars file
+4. Manually create Alpaca and RDS secrets manager secret (plaintext type with default settings)
+```json
+// Example RDS secret
+{
+    "database": "DATABASE",
+    "host": "HOST",
+    "password": "PASSWORD",
+    "user": "USER"
+}
+
+// Example Alpaca secret
+{
+  "API_KEY_ID": "API_KEY_ID_GOES_HERE",
+  "SECRET_KEY": "SECRET_KEY_GOES_HERE"
+}
 ```
-bash build.sh
-bash deploy.sh dev
+5. Export AWS credentials
+6. Run the following:
 ```
+bash scripts/build.sh
+bash scripts/deploy.sh dev
+```
+7. Initial TF apply will fail with CertificateNotFound error. Visit [AWS ACM console](https://console.aws.amazon.com/acm/) to validate certificate.
