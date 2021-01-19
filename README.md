@@ -5,7 +5,7 @@
 3. Create variables/env-name.tfvars file
 4. Manually create Alpaca and RDS secrets manager secret (plaintext type with default settings)
 ```json
-// Example RDS secret
+// Example RDS secret - NOTE, only a placeholder is needed here. TF will update values.
 {
     "database": "DATABASE",
     "host": "HOST",
@@ -13,7 +13,7 @@
     "user": "USER"
 }
 
-// Example Alpaca secret
+// Example Alpaca secret - Actual key and secret values are required, and TF will not update values.
 {
   "API_KEY_ID": "API_KEY_ID_GOES_HERE",
   "SECRET_KEY": "SECRET_KEY_GOES_HERE"
