@@ -1,4 +1,49 @@
 ##################################################################################
+# SFN
+##################################################################################
+
+data "aws_iam_policy_document" "sfn_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["states.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "lambda_xray_sfn_iam_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords",
+      "xray:GetSamplingRules",
+      "xray:GetSamplingTargets",
+      "lambda:InvokeFunction"
+    ]
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "lambda_xray_sfn_iam_policy" {
+  name   = "lambda-xray-sfn-policy"
+  policy = data.aws_iam_policy_document.lambda_xray_sfn_iam_policy.json
+}
+
+resource "aws_iam_role" "lambda_xray_sfn_role" {
+  name               = "lambda-xray-sfn-role"
+  assume_role_policy = data.aws_iam_policy_document.sfn_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_xray_sfn_iam_policy_role_attachment" {
+  role       = aws_iam_role.lambda_xray_sfn_role.name
+  policy_arn = aws_iam_policy.lambda_xray_sfn_iam_policy.arn
+}
+
+##################################################################################
 # Lambda
 ##################################################################################
 
