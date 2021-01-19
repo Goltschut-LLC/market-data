@@ -4,9 +4,10 @@ const mysql = require("mysql2/promise");
 const Credentials = require("./get-credentials");
 
 exports.handler = async (event) => {
-  const { timeframe, symbols, limit, start, end } = event;
-
+  const { Input } = event;
+    
   console.log("Handler called with event:", event);
+  const { timeframe, symbols, limit, start, end } = Input;
 
   console.log("Getting historical data");
   const barset = await HistoricalData.get({
@@ -16,6 +17,12 @@ exports.handler = async (event) => {
     start,
     end,
   });
+  
+  
+  if (!(Object.keys(barset.symbols).length > 0)){ 
+    console.log("No historical data found");
+    return 
+  }
 
   console.log("Parsing historical data values");
   let values = [];
@@ -48,23 +55,25 @@ exports.handler = async (event) => {
     database,
     connectTimeout: 30 * 1000,
   });
-
-  console.log("Loading historical data values");
-  await conn.query(
-    [
-      "REPLACE INTO aggregate_observations (",
-      "  timeframe,",
-      "  symbol,",
-      "  start_time,",
-      "  open_price,",
-      "  high_price,",
-      "  low_price,",
-      "  close_price,",
-      "  volume",
-      ") VALUES ?",
-    ].join(""),
-    [values]
-  );
+  
+  if (values.length > 0){
+    console.log("Loading historical data values");
+    await conn.query(
+      [
+        "REPLACE INTO aggregate_observations (",
+        "  timeframe,",
+        "  symbol,",
+        "  start_time,",
+        "  open_price,",
+        "  high_price,",
+        "  low_price,",
+        "  close_price,",
+        "  volume",
+        ") VALUES ?",
+      ].join(""),
+      [values]
+    );
+  }
 
   console.log("Closing RDS connection");
   await conn.end();
