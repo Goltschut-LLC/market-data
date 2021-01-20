@@ -20,7 +20,13 @@ data "aws_iam_policy_document" "lambda_xray_sfn_iam_policy" {
       "xray:PutTelemetryRecords",
       "xray:GetSamplingRules",
       "xray:GetSamplingTargets",
-      "lambda:InvokeFunction"
+      "lambda:InvokeFunction",
+      "states:StartExecution",
+      "states:DescribeExecution",
+      "states:StopExecution",
+      "events:PutTargets",
+      "events:PutRule",
+      "events:DescribeRule"
     ]
     resources = [
       "*",

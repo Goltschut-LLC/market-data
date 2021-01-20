@@ -2,7 +2,7 @@
 // https://alpaca.markets/docs/api-documentation/api-v2/market-data/bars/
 
 const Alpaca = require("@alpacahq/alpaca-trade-api");
-const { alpacaSecretName } = require("./config");
+const { alpacaSecretName, env } = require("./config");
 const Credentials = require("./get-credentials");
 
 const get = async (event) => {
@@ -12,7 +12,7 @@ const get = async (event) => {
     const alpaca = new Alpaca({
       keyId: API_KEY_ID,
       secretKey: SECRET_KEY,
-      paper: true,
+      paper: env !== 'prod',
       usePolygon: false,
     });
 

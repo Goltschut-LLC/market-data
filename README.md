@@ -23,8 +23,12 @@
 ```
 5. Export AWS credentials
 6. Run the following:
-```
+```sh
 bash scripts/build.sh
 bash scripts/deploy.sh dev
 ```
 7. Initial TF apply will fail with CertificateNotFound error. Visit [AWS ACM console](https://console.aws.amazon.com/acm/) to validate certificate.
+8. After certificate is issued, run the following one more time:
+```sh
+bash scripts/deploy.sh dev
+```

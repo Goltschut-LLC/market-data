@@ -1,5 +1,4 @@
 {
-  "Comment": "Create tables, and ingest all available historical U.S. stock market data.",
   "StartAt": "Create Tables",
   "States": {
     "Create Tables": {
@@ -104,69 +103,19 @@
       "ItemsPath": "$.symbols",
       "MaxConcurrency": 10,
       "Iterator": {
-        "StartAt": "Get Initialize Symbol Payloads",
+        "StartAt": "Initialize Symbol",
         "States": {
-          "Get Initialize Symbol Payloads": {
-            "Type": "Task",
-            "Resource": "arn:aws:states:::lambda:invoke",
-            "Parameters": {
-              "FunctionName": "get-initialize-symbol-payloads:$LATEST",
-              "Payload": {
-                "Input.$": "$"
-              }
-            },
-            "Retry": [
-              {
-                "Comment": "Retry function after an error occurs.",
-                "ErrorEquals": [
-                  "States.ALL"
-                ],
-                "IntervalSeconds": ${RETRY_INTERVAL_SECONDS},
-                "MaxAttempts": ${MAX_ATTEMPTS},
-                "BackoffRate": ${BACKOFF_RATE}
-              }
-            ],
-            "Next": "Initialize Symbol"
-          },
-          "Initialize Symbol": {
-            "Type": "Map",
-            "InputPath": "$.Payload",
-            "ItemsPath": "$.payloads",
-            "MaxConcurrency": 0,
-            "Iterator": {
-              "StartAt": "Ingest Historical Data",
-              "States": {
-                "Ingest Historical Data": {
-                  "Type": "Task",
-                  "Resource": "arn:aws:states:::lambda:invoke",
-                  "Parameters": {
-                    "FunctionName": "ingest-aggregate-observations:$LATEST",
-                    "Payload": {
-                      "Input.$": "$"
-                    }
-                  },
-                  "Retry": [
-                    {
-                      "Comment": "Retry function after an error occurs.",
-                      "ErrorEquals": [
-                        "States.ALL"
-                      ],
-                      "IntervalSeconds": ${RETRY_INTERVAL_SECONDS},
-                      "MaxAttempts": ${MAX_ATTEMPTS},
-                      "BackoffRate": ${BACKOFF_RATE}
-                    }
-                  ],
-                  "End": true
+            "Initialize Symbol": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::states:startExecution.sync",
+              "Parameters": {
+                "StateMachineArn": "${INITIALIZE_SYMBOL_SFN_ARN}",
+                "Input": {
+                  "symbol.$": "$"
                 }
-              }
-            },
-            "Next": "Wait One Minute"
-          },
-          "Wait One Minute": {
-            "Type": "Wait",
-            "Seconds": 60,
-            "End": true
-          }
+              },
+              "End": true
+            }
         }
       },
       "End": true

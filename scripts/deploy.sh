@@ -13,7 +13,7 @@ echo $TFSTATE_BUCKET
 TFSTATE_KEY=goltschut-market-data.tfstate
 TFSTATE_REGION=us-east-1
 
-terraform init \
+terraform init -reconfigure \
     -backend-config="bucket=${TFSTATE_BUCKET}" \
     -backend-config="key=${TFSTATE_KEY}" \
     -backend-config="region=${TFSTATE_REGION}"

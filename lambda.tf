@@ -11,8 +11,8 @@ resource "aws_lambda_function" "create_tables_lambda_function" {
 
   environment {
     variables = {
-      REGION             = data.aws_region.current.name
-      RDS_SECRET_NAME    = var.rds_secret_name
+      REGION          = data.aws_region.current.name
+      RDS_SECRET_NAME = var.rds_secret_name
     }
   }
 
@@ -35,6 +35,7 @@ resource "aws_lambda_function" "ingest_symbols_lambda_function" {
 
   environment {
     variables = {
+      ENV                = var.env
       REGION             = data.aws_region.current.name
       ALPACA_SECRET_NAME = var.alpaca_secret_name
       RDS_SECRET_NAME    = var.rds_secret_name
@@ -60,6 +61,7 @@ resource "aws_lambda_function" "ingest_aggregate_observations_lambda_function" {
 
   environment {
     variables = {
+      ENV                = var.env
       REGION             = data.aws_region.current.name
       ALPACA_SECRET_NAME = var.alpaca_secret_name
       RDS_SECRET_NAME    = var.rds_secret_name
@@ -85,8 +87,8 @@ resource "aws_lambda_function" "get_symbols_lambda_function" {
 
   environment {
     variables = {
-      REGION             = data.aws_region.current.name
-      RDS_SECRET_NAME    = var.rds_secret_name
+      REGION          = data.aws_region.current.name
+      RDS_SECRET_NAME = var.rds_secret_name
     }
   }
 
@@ -109,7 +111,7 @@ resource "aws_lambda_function" "get_initialize_symbol_payloads_lambda_function" 
 
   environment {
     variables = {
-      REGION             = data.aws_region.current.name
+      REGION = data.aws_region.current.name
     }
   }
 
@@ -133,8 +135,8 @@ resource "aws_lambda_function" "delete_me_lambda_function" {
 
   environment {
     variables = {
-      REGION             = data.aws_region.current.name
-      RDS_SECRET_NAME    = var.rds_secret_name
+      REGION          = data.aws_region.current.name
+      RDS_SECRET_NAME = var.rds_secret_name
     }
   }
 
