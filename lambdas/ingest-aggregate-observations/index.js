@@ -19,12 +19,6 @@ exports.handler = async (event) => {
     end,
   });
   
-
-  console.log("DEBUG LOGS:")
-  console.log({ timeframe, symbols, limit, start, end })
-  console.log('barset', JSON.stringify(barset))
-  
-  
   if (!(Object.keys(barset.symbols).length > 0)){ 
     console.log("No historical data found");
     return 
