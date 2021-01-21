@@ -95,27 +95,59 @@
           "Next": "Fallback"
         }
       ],
-      "Next": "Initialize Symbols"
+      "Next": "Batch Initialize Symbol Jobs"
     },
-    "Initialize Symbols": {
+    "Batch Initialize Symbol Jobs": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "batch-initialize-symbol-jobs:$LATEST",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Retry": [
+        {
+          "Comment": "Retry function after an error occurs.",
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "IntervalSeconds": ${RETRY_INTERVAL_SECONDS},
+          "MaxAttempts": ${MAX_ATTEMPTS},
+          "BackoffRate": ${BACKOFF_RATE}
+        }
+      ],
+      "Catch": [
+        {
+          "Comment": "Catch errors and revert to fallback states.",
+          "ResultPath": "$.error-info",
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Fallback"
+        }
+      ],
+      "Next": "Handle Job Batches"
+    },
+    "Handle Job Batches": {
       "Type": "Map",
       "InputPath": "$.Payload",
-      "ItemsPath": "$.symbols",
-      "MaxConcurrency": 10,
+      "ItemsPath": "$.batches",
+      "MaxConcurrency": 0,
       "Iterator": {
-        "StartAt": "Initialize Symbol",
+        "StartAt": "Handle Job Batch",
         "States": {
-            "Initialize Symbol": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::states:startExecution.sync",
-              "Parameters": {
-                "StateMachineArn": "${INITIALIZE_SYMBOL_SFN_ARN}",
-                "Input": {
-                  "symbol.$": "$"
-                }
-              },
-              "End": true
-            }
+          "Handle Job Batch": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::states:startExecution.sync",
+            "Parameters": {
+              "StateMachineArn": "${HANDLE_JOB_BATCH_SFN_ARN}",
+              "Input": {
+                "symbols.$": "$"
+              }
+            },
+            "End": true
+          }
         }
       },
       "End": true

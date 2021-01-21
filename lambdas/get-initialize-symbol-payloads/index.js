@@ -1,4 +1,4 @@
-const CALENDAR_YEARS_TO_INGEST = 11 // Ensures 10 complete years (if available)
+const CALENDAR_YEARS_TO_INGEST = 6 // Ensures 5 complete years (if available)
 
 exports.handler = async (event) => {
   const { Input: symbol } = event;
