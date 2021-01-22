@@ -1,18 +1,19 @@
 {
-  "StartAt": "Initialize Symbols",
+  "StartAt": "Update Symbols",
     "States": {
-      "Initialize Symbols": {
+      "Update Symbols": {
         "Type": "Map",
         "ItemsPath": "$.symbols",
-        "MaxConcurrency": 1,
+        "ResultPath": null,
+        "MaxConcurrency": 5,
         "Iterator": {
-          "StartAt": "Initialize Symbol",
+          "StartAt": "Update Symbol",
           "States": {
-            "Initialize Symbol": {
+            "Update Symbol": {
               "Type": "Task",
               "Resource": "arn:aws:states:::states:startExecution.sync",
               "Parameters": {
-                "StateMachineArn": "${INITIALIZE_SYMBOL_SFN_ARN}",
+                "StateMachineArn": "${UPDATE_SYMBOL_SFN_ARN}",
                 "Input": {
                   "symbol.$": "$"
                 }

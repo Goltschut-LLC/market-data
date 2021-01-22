@@ -8,17 +8,17 @@ resource "aws_sfn_state_machine" "initialize_environment_sfn" {
       RETRY_INTERVAL_SECONDS = 2,
       MAX_ATTEMPTS           = 2,
       BACKOFF_RATE           = 2,
-      HANDLE_JOB_BATCH_SFN_ARN = aws_sfn_state_machine.handle_job_batch_sfn.arn
+      INITIALIZE_BATCH_SFN_ARN = aws_sfn_state_machine.initialize_batch_sfn.arn
     }
   )
 }
 
-resource "aws_sfn_state_machine" "handle_job_batch_sfn" {
-  name     = "handle-job-batch"
+resource "aws_sfn_state_machine" "initialize_batch_sfn" {
+  name     = "initialize-batch"
   role_arn = aws_iam_role.lambda_xray_sfn_role.arn
 
   definition = templatefile(
-    "${path.module}/templates/handle-job-batch.tpl",
+    "${path.module}/templates/initialize-batch.tpl",
     {
       RETRY_INTERVAL_SECONDS = 5,
       MAX_ATTEMPTS           = 2,
@@ -34,6 +34,50 @@ resource "aws_sfn_state_machine" "initialize_symbol_sfn" {
 
   definition = templatefile(
     "${path.module}/templates/initialize-symbol.tpl",
+    {
+      RETRY_INTERVAL_SECONDS = 5,
+      MAX_ATTEMPTS           = 2,
+      BACKOFF_RATE           = 2
+    }
+  )
+}
+
+resource "aws_sfn_state_machine" "update_environment_sfn" {
+  name     = "update-environment"
+  role_arn = aws_iam_role.lambda_xray_sfn_role.arn
+
+  definition = templatefile(
+    "${path.module}/templates/update-environment.tpl",
+    {
+      RETRY_INTERVAL_SECONDS = 2,
+      MAX_ATTEMPTS           = 2,
+      BACKOFF_RATE           = 2,
+      UPDATE_BATCH_SFN_ARN = aws_sfn_state_machine.update_batch_sfn.arn
+    }
+  )
+}
+
+resource "aws_sfn_state_machine" "update_batch_sfn" {
+  name     = "update-batch"
+  role_arn = aws_iam_role.lambda_xray_sfn_role.arn
+
+  definition = templatefile(
+    "${path.module}/templates/update-batch.tpl",
+    {
+      RETRY_INTERVAL_SECONDS = 5,
+      MAX_ATTEMPTS           = 2,
+      BACKOFF_RATE           = 2,
+      UPDATE_SYMBOL_SFN_ARN = aws_sfn_state_machine.update_symbol_sfn.arn
+    }
+  )
+}
+
+resource "aws_sfn_state_machine" "update_symbol_sfn" {
+  name     = "update-symbol"
+  role_arn = aws_iam_role.lambda_xray_sfn_role.arn
+
+  definition = templatefile(
+    "${path.module}/templates/update-symbol.tpl",
     {
       RETRY_INTERVAL_SECONDS = 5,
       MAX_ATTEMPTS           = 2,

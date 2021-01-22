@@ -1,38 +1,6 @@
 {
-  "StartAt": "Create Tables",
+  "StartAt": "Ingest Symbols",
   "States": {
-    "Create Tables": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
-      "Parameters": {
-        "FunctionName": "create-tables:$LATEST",
-        "Payload": {
-          "Input.$": "$"
-        }
-      },
-      "Retry": [
-        {
-          "Comment": "Retry function after an error occurs.",
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "IntervalSeconds": ${RETRY_INTERVAL_SECONDS},
-          "MaxAttempts": ${MAX_ATTEMPTS},
-          "BackoffRate": ${BACKOFF_RATE}
-        }
-      ],
-      "Catch": [
-        {
-          "Comment": "Catch errors and revert to fallback states.",
-          "ResultPath": "$.error-info",
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "Fallback"
-        }
-      ],
-      "Next": "Ingest Symbols"
-    },
     "Ingest Symbols": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
@@ -127,21 +95,21 @@
           "Next": "Fallback"
         }
       ],
-      "Next": "Initialize Batches"
+      "Next": "Update Batches"
     },
-    "Initialize Batches": {
+    "Update Batches": {
       "Type": "Map",
       "InputPath": "$.Payload",
       "ItemsPath": "$.batches",
       "MaxConcurrency": 0,
       "Iterator": {
-        "StartAt": "Initialize Batch",
+        "StartAt": "Update Batch",
         "States": {
-          "Initialize Batch": {
+          "Update Batch": {
             "Type": "Task",
             "Resource": "arn:aws:states:::states:startExecution.sync",
             "Parameters": {
-              "StateMachineArn": "${INITIALIZE_BATCH_SFN_ARN}",
+              "StateMachineArn": "${UPDATE_BATCH_SFN_ARN}",
               "Input": {
                 "symbols.$": "$"
               }
