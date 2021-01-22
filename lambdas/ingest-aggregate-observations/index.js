@@ -5,11 +5,10 @@ const Credentials = require("./get-credentials");
 
 exports.handler = async (event) => {
   const { Input } = event;
-    
+
   console.log("Handler called with event:", JSON.stringify(event));
   const { timeframe, symbols, limit, start, end } = Input;
 
-  
   console.log("Getting historical data");
   const barset = await HistoricalData.get({
     timeframe,
@@ -18,10 +17,10 @@ exports.handler = async (event) => {
     start,
     end,
   });
-  
-  if (!(Object.keys(barset.symbols).length > 0)){ 
+
+  if (!(Object.keys(barset.symbols).length > 0)) {
     console.log("No historical data found");
-    return 
+    return;
   }
 
   console.log("Parsing historical data values");
@@ -55,25 +54,25 @@ exports.handler = async (event) => {
     database,
     connectTimeout: 30 * 1000,
   });
-  
-  if(values.length > 0){
+
+  if (values.length > 0) {
     console.log("Loading historical data values");
-    try {    
-        await conn.query(
-          [
-            "REPLACE INTO aggregate_observations (",
-            "  timeframe,",
-            "  symbol,",
-            "  start_time,",
-            "  open_price,",
-            "  high_price,",
-            "  low_price,",
-            "  close_price,",
-            "  volume",
-            ") VALUES ?",
-          ].join(""),
-          [values]
-        );
+    try {
+      await conn.query(
+        [
+          "REPLACE INTO aggregate_observations (",
+          "  timeframe,",
+          "  symbol,",
+          "  start_time,",
+          "  open_price,",
+          "  high_price,",
+          "  low_price,",
+          "  close_price,",
+          "  volume",
+          ") VALUES ?",
+        ].join(""),
+        [values]
+      );
     } catch (error) {
       console.log("Error encountered during RDS data load:", error.message);
       console.log(error.stack);
