@@ -5,9 +5,9 @@ resource "aws_sfn_state_machine" "initialize_environment_sfn" {
   definition = templatefile(
     "${path.module}/templates/initialize-environment.tpl",
     {
-      RETRY_INTERVAL_SECONDS = 2,
-      MAX_ATTEMPTS           = 2,
-      BACKOFF_RATE           = 2,
+      RETRY_INTERVAL_SECONDS   = 2,
+      MAX_ATTEMPTS             = 2,
+      BACKOFF_RATE             = 2,
       INITIALIZE_BATCH_SFN_ARN = aws_sfn_state_machine.initialize_batch_sfn.arn
     }
   )
@@ -20,9 +20,9 @@ resource "aws_sfn_state_machine" "initialize_batch_sfn" {
   definition = templatefile(
     "${path.module}/templates/initialize-batch.tpl",
     {
-      RETRY_INTERVAL_SECONDS = 5,
-      MAX_ATTEMPTS           = 2,
-      BACKOFF_RATE           = 2,
+      RETRY_INTERVAL_SECONDS    = 5,
+      MAX_ATTEMPTS              = 2,
+      BACKOFF_RATE              = 2,
       INITIALIZE_SYMBOL_SFN_ARN = aws_sfn_state_machine.initialize_symbol_sfn.arn
     }
   )
@@ -52,7 +52,7 @@ resource "aws_sfn_state_machine" "update_environment_sfn" {
       RETRY_INTERVAL_SECONDS = 2,
       MAX_ATTEMPTS           = 2,
       BACKOFF_RATE           = 2,
-      UPDATE_BATCH_SFN_ARN = aws_sfn_state_machine.update_batch_sfn.arn
+      UPDATE_BATCH_SFN_ARN   = aws_sfn_state_machine.update_batch_sfn.arn
     }
   )
 }
@@ -67,7 +67,7 @@ resource "aws_sfn_state_machine" "update_batch_sfn" {
       RETRY_INTERVAL_SECONDS = 5,
       MAX_ATTEMPTS           = 2,
       BACKOFF_RATE           = 2,
-      UPDATE_SYMBOL_SFN_ARN = aws_sfn_state_machine.update_symbol_sfn.arn
+      UPDATE_SYMBOL_SFN_ARN  = aws_sfn_state_machine.update_symbol_sfn.arn
     }
   )
 }

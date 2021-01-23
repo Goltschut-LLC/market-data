@@ -122,3 +122,44 @@ resource "aws_iam_role_policy_attachment" "ecs_iam_policy_role_attachment" {
   role       = aws_iam_role.ecs_role.name
   policy_arn = data.aws_iam_policy.ecs_iam_policy.arn
 }
+
+##################################################################################
+# CW
+##################################################################################
+
+data "aws_iam_policy_document" "cw_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "snf_cw_iam_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "states:StartExecution"
+    ]
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "snf_cw_iam_policy" {
+  name   = "snf-cw-iam-policy"
+  policy = data.aws_iam_policy_document.snf_cw_iam_policy.json
+}
+
+resource "aws_iam_role" "sfn_cw_role" {
+  name               = "sfn-cw-role"
+  assume_role_policy = data.aws_iam_policy_document.cw_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "snf_cw_iam_policyrole_attachment" {
+  role       = aws_iam_role.sfn_cw_role.name
+  policy_arn = aws_iam_policy.snf_cw_iam_policy.arn
+}
