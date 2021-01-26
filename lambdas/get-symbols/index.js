@@ -6,9 +6,9 @@ const DEFAULT_STATUSES = ["active"]
 const DEFAULT_EXCHANGES = ["NYSE", "NASDAQ"]
 
 exports.handler = async (event) => {
-  const { exchanges, statuses } = event;
-
   console.log("Handler called with event:", event);
+  
+  const { exchanges, statuses } = (event.Input.Payload || {});
 
   console.log("Getting RDS credentials");
   const { host, user, password, database } = await Credentials.get(

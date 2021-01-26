@@ -5,7 +5,7 @@ resource "aws_lambda_function" "create_tables_lambda_function" {
   )
   function_name = "create-tables"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 
@@ -29,7 +29,7 @@ resource "aws_lambda_function" "ingest_symbols_lambda_function" {
   )
   function_name = "ingest-symbols"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 
@@ -55,7 +55,7 @@ resource "aws_lambda_function" "ingest_aggregate_observations_lambda_function" {
   )
   function_name = "ingest-aggregate-observations"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 
@@ -81,7 +81,7 @@ resource "aws_lambda_function" "get_symbols_lambda_function" {
   )
   function_name = "get-symbols"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 
@@ -105,7 +105,7 @@ resource "aws_lambda_function" "batch_symbols_lambda_function" {
   )
   function_name = "batch-symbols"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 
@@ -128,7 +128,7 @@ resource "aws_lambda_function" "get_initialize_symbol_payloads_lambda_function" 
   )
   function_name = "get-initialize-symbol-payloads"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 
@@ -151,7 +151,7 @@ resource "aws_lambda_function" "get_update_symbol_payload_lambda_function" {
   )
   function_name = "get-update-symbol-payload"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 
@@ -175,7 +175,7 @@ resource "aws_lambda_function" "delete_me_lambda_function" {
   )
   function_name = "delete-me"
   handler       = "index.handler"
-  role          = aws_iam_role.rds_vpc_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
   timeout       = 30
 

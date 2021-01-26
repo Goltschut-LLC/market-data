@@ -11,7 +11,6 @@ resource "random_password" "rds_password" {
   special = false
 }
 
-
 resource "aws_secretsmanager_secret_version" "rds" {
   secret_id = var.rds_secret_name
   secret_string = jsonencode({

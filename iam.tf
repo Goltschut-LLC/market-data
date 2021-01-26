@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "sfn_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_xray_sfn_iam_policy" {
+data "aws_iam_policy_document" "sfn_iam_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -34,19 +34,19 @@ data "aws_iam_policy_document" "lambda_xray_sfn_iam_policy" {
   }
 }
 
-resource "aws_iam_policy" "lambda_xray_sfn_iam_policy" {
-  name   = "lambda-xray-sfn-policy"
-  policy = data.aws_iam_policy_document.lambda_xray_sfn_iam_policy.json
+resource "aws_iam_policy" "sfn_iam_policy" {
+  name   = "sfn-policy"
+  policy = data.aws_iam_policy_document.sfn_iam_policy.json
 }
 
-resource "aws_iam_role" "lambda_xray_sfn_role" {
-  name               = "lambda-xray-sfn-role"
+resource "aws_iam_role" "sfn_role" {
+  name               = "sfn-role"
   assume_role_policy = data.aws_iam_policy_document.sfn_assume_role_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_xray_sfn_iam_policy_role_attachment" {
-  role       = aws_iam_role.lambda_xray_sfn_role.name
-  policy_arn = aws_iam_policy.lambda_xray_sfn_iam_policy.arn
+resource "aws_iam_role_policy_attachment" "sfn_role_attachment" {
+  role       = aws_iam_role.sfn_role.name
+  policy_arn = aws_iam_policy.sfn_iam_policy.arn
 }
 
 ##################################################################################
@@ -63,7 +63,7 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "rds_vpc_lambda_iam_policy" {
+data "aws_iam_policy_document" "lambda_iam_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -79,20 +79,20 @@ data "aws_iam_policy_document" "rds_vpc_lambda_iam_policy" {
   }
 }
 
-resource "aws_iam_policy" "rds_vpc_lambda_iam_policy" {
-  name   = "rds-vpc-lambda-policy"
-  policy = data.aws_iam_policy_document.rds_vpc_lambda_iam_policy.json
+resource "aws_iam_policy" "lambda_iam_policy" {
+  name   = "lambda-policy"
+  policy = data.aws_iam_policy_document.lambda_iam_policy.json
 }
 
-resource "aws_iam_role" "rds_vpc_lambda_role" {
-  name               = "rds-vpc-lambda-role"
+resource "aws_iam_role" "lambda_role" {
+  name               = "lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
-resource "aws_iam_policy_attachment" "rds_vpc_lambda_iam_policy_role_attachment" {
-  name       = "rds-vpc-lambda-policy-attachment"
-  roles      = [aws_iam_role.rds_vpc_lambda_role.name]
-  policy_arn = aws_iam_policy.rds_vpc_lambda_iam_policy.arn
+resource "aws_iam_policy_attachment" "lambda_iam_policy_role_attachment" {
+  name       = "lambda-policy-attachment"
+  roles      = [aws_iam_role.lambda_role.name]
+  policy_arn = aws_iam_policy.lambda_iam_policy.arn
 }
 
 ##################################################################################
@@ -137,7 +137,7 @@ data "aws_iam_policy_document" "cw_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "snf_cw_iam_policy" {
+data "aws_iam_policy_document" "cw_iam_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -149,17 +149,17 @@ data "aws_iam_policy_document" "snf_cw_iam_policy" {
   }
 }
 
-resource "aws_iam_policy" "snf_cw_iam_policy" {
-  name   = "snf-cw-iam-policy"
-  policy = data.aws_iam_policy_document.snf_cw_iam_policy.json
+resource "aws_iam_policy" "cw_iam_policy" {
+  name   = "cw-iam-policy"
+  policy = data.aws_iam_policy_document.cw_iam_policy.json
 }
 
-resource "aws_iam_role" "sfn_cw_role" {
-  name               = "sfn-cw-role"
+resource "aws_iam_role" "cw_role" {
+  name               = "cw-role"
   assume_role_policy = data.aws_iam_policy_document.cw_assume_role_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "snf_cw_iam_policyrole_attachment" {
-  role       = aws_iam_role.sfn_cw_role.name
-  policy_arn = aws_iam_policy.snf_cw_iam_policy.arn
+resource "aws_iam_role_policy_attachment" "cw_iam_policy_role_attachment" {
+  role       = aws_iam_role.cw_role.name
+  policy_arn = aws_iam_policy.cw_iam_policy.arn
 }
