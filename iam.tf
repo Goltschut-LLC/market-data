@@ -163,3 +163,56 @@ resource "aws_iam_role_policy_attachment" "cw_iam_policy_role_attachment" {
   role       = aws_iam_role.cw_role.name
   policy_arn = aws_iam_policy.cw_iam_policy.arn
 }
+
+##################################################################################
+# Sagemaker
+##################################################################################
+
+data "aws_iam_policy_document" "sagemaker_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["sagemaker.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy" "sagemaker_managed_iam_policy" {
+  arn = "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+}
+
+data "aws_iam_policy_document" "sagemaker_iam_policy" {
+  statement {
+    effect= "Allow"
+    actions= [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+      "s3:ListBucket"
+    ]
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "sagemaker_iam_policy" {
+  name   = "sagemaker-iam-policy"
+  policy = data.aws_iam_policy_document.sagemaker_iam_policy.json
+}
+
+resource "aws_iam_role" "sagemaker_role" {
+  name               = "sagemaker-role"
+  assume_role_policy = data.aws_iam_policy_document.sagemaker_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker_managed_iam_policy_role_attachment" {
+  role       = aws_iam_role.sagemaker_role.name
+  policy_arn = data.aws_iam_policy.sagemaker_managed_iam_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker_iam_policy_role_attachment" {
+  role       = aws_iam_role.sagemaker_role.name
+  policy_arn = aws_iam_policy.sagemaker_iam_policy.arn
+}
