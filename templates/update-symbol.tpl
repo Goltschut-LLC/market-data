@@ -27,7 +27,7 @@
         "Type": "Task",
         "Resource": "arn:aws:states:::lambda:invoke",
         "Parameters": {
-          "FunctionName": "ingest-aggregate-observations:$LATEST",
+          "FunctionName": "ingest-daily-ohlcv:$LATEST",
           "Payload": {
             "Input.$": "$.Payload"
           }

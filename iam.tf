@@ -184,8 +184,8 @@ data "aws_iam_policy" "sagemaker_managed_iam_policy" {
 
 data "aws_iam_policy_document" "sagemaker_iam_policy" {
   statement {
-    effect= "Allow"
-    actions= [
+    effect = "Allow"
+    actions = [
       "s3:GetObject",
       "s3:PutObject",
       "s3:DeleteObject",

@@ -1,5 +1,5 @@
 {
-  "name": "ingest-aggregate-observations",
+  "name": "ingest-daily-ohlcv",
   "version": "0.0.1",
   "description": "Function for obtaining historical market data from Alpaca.",
   "scripts": {

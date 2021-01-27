@@ -1,5 +1,5 @@
 #!/bin/sh
-for lambda in create-tables ingest-symbols ingest-aggregate-observations delete-me
+for lambda in create-tables ingest-symbols ingest-daily-ohlcv
 do 
     cd ./lambdas/$lambda
 

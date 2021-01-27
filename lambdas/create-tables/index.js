@@ -18,10 +18,10 @@ exports.handler = async (event) => {
     connectTimeout: 30 * 1000,
   });
 
-  console.log("Creating aggregate_observations table if not exists");
+  console.log("Creating daily_ohlcv table if not exists");
   await conn.execute(
     [
-      "CREATE TABLE IF NOT EXISTS aggregate_observations (",
+      "CREATE TABLE IF NOT EXISTS daily_ohlcv (",
       "  timeframe VARCHAR(10),",
       "  symbol VARCHAR(20),",
       "  start_time DATETIME,",

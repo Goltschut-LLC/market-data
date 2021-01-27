@@ -19,11 +19,11 @@ variable "max_az_count" {
 }
 
 variable "rds_min_capacity" {
-  default = 1
+  default = 2
 }
 
 variable "rds_max_capacity" {
-  default = 2
+  default = 4
 }
 
 variable "rds_username" {

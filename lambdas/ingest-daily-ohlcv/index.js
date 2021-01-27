@@ -60,7 +60,7 @@ exports.handler = async (event) => {
     try {
       await conn.query(
         [
-          "REPLACE INTO aggregate_observations (",
+          "REPLACE INTO daily_ohlcv (",
           "  timeframe,",
           "  symbol,",
           "  start_time,",

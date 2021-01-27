@@ -48,12 +48,12 @@ resource "aws_lambda_function" "ingest_symbols_lambda_function" {
   }
 }
 
-resource "aws_lambda_function" "ingest_aggregate_observations_lambda_function" {
-  filename = "./lambdas/ingest-aggregate-observations/dist/ingest-aggregate-observations.zip"
+resource "aws_lambda_function" "ingest_daily_ohlcv_lambda_function" {
+  filename = "./lambdas/ingest-daily-ohlcv/dist/ingest-daily-ohlcv.zip"
   source_code_hash = filebase64sha256(
-    "./lambdas/ingest-aggregate-observations/dist/ingest-aggregate-observations.zip"
+    "./lambdas/ingest-daily-ohlcv/dist/ingest-daily-ohlcv.zip"
   )
-  function_name = "ingest-aggregate-observations"
+  function_name = "ingest-daily-ohlcv"
   handler       = "index.handler"
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
@@ -158,31 +158,6 @@ resource "aws_lambda_function" "get_update_symbol_payload_lambda_function" {
   environment {
     variables = {
       REGION = data.aws_region.current.name
-    }
-  }
-
-  vpc_config {
-    subnet_ids         = aws_subnet.private_subnets.*.id
-    security_group_ids = [aws_security_group.main_sg.id]
-  }
-}
-
-# REALLY shouldn't have a passthrough query option
-resource "aws_lambda_function" "delete_me_lambda_function" {
-  filename = "./lambdas/delete-me/dist/delete-me.zip"
-  source_code_hash = filebase64sha256(
-    "./lambdas/delete-me/dist/delete-me.zip"
-  )
-  function_name = "delete-me"
-  handler       = "index.handler"
-  role          = aws_iam_role.lambda_role.arn
-  runtime       = "nodejs12.x"
-  timeout       = 30
-
-  environment {
-    variables = {
-      REGION          = data.aws_region.current.name
-      RDS_SECRET_NAME = var.rds_secret_name
     }
   }
 
