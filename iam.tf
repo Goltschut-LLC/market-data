@@ -124,6 +124,34 @@ resource "aws_iam_role_policy_attachment" "ecs_iam_policy_role_attachment" {
 }
 
 ##################################################################################
+# Glue
+##################################################################################
+
+data "aws_iam_policy_document" "glue_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["glue.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy" "glue_iam_policy" {
+  arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
+}
+
+resource "aws_iam_role" "glue_role" {
+  name               = "glue-role"
+  assume_role_policy = data.aws_iam_policy_document.glue_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "glue_iam_policy_role_attachment" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = data.aws_iam_policy.glue_iam_policy.arn
+}
+
+##################################################################################
 # CW
 ##################################################################################
 

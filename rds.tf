@@ -11,8 +11,8 @@ resource "aws_rds_cluster" "rds_cluster" {
   master_password        = random_password.rds_password.result
   engine_mode            = "serverless"
   enable_http_endpoint   = true
-  skip_final_snapshot = true
-  
+  skip_final_snapshot    = true
+
   scaling_configuration {
     min_capacity = var.rds_min_capacity
     max_capacity = var.rds_max_capacity

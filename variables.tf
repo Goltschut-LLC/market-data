@@ -34,6 +34,10 @@ variable "rds_database_name" {
   default = "us_stock_market"
 }
 
+variable "rds_port" {
+  default = "3306"
+}
+
 variable "rds_secret_name" {
   default = "rds"
 }
