@@ -3,7 +3,6 @@ const mysql = require("mysql2/promise");
 const Credentials = require("./get-credentials");
 
 exports.handler = async (event) => {
-
   console.log("Getting RDS credentials");
   const { host, user, password, database } = await Credentials.get(
     rdsSecretName

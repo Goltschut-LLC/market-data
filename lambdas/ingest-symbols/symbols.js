@@ -12,7 +12,7 @@ const get = async (event) => {
     const alpaca = new Alpaca({
       keyId: API_KEY_ID,
       secretKey: SECRET_KEY,
-      paper: env !== 'prod',
+      paper: env !== "prod",
       usePolygon: false,
     });
 

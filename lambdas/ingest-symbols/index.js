@@ -4,16 +4,13 @@ const mysql = require("mysql2/promise");
 const Credentials = require("./get-credentials");
 
 exports.handler = async (event) => {
-
   console.log("Getting symbols");
   const symbols = await Symbols.get();
 
   console.log("Parsing symbol data");
   let values = [];
   symbols.forEach((symbol) => {
-    values.push(
-      [ symbol.symbol, symbol.exchange, symbol.status ]
-    );
+    values.push([symbol.symbol, symbol.exchange, symbol.status]);
   });
 
   console.log("Getting RDS credentials");
