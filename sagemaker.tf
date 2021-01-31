@@ -22,13 +22,3 @@ resource "aws_sagemaker_user_profile" "admin" {
     security_groups = [aws_security_group.main_sg.id]
   }
 }
-
-resource "aws_sagemaker_notebook_instance" "main" {
-  count                  = var.env == "prod" ? 1 : 0
-  name                   = "main"
-  role_arn               = aws_iam_role.sagemaker_role.arn
-  instance_type          = "ml.t3.large"
-  direct_internet_access = "Disabled"
-  subnet_id              = aws_subnet.private_subnets[0].id
-  security_groups        = [aws_security_group.main_sg.id]
-}
