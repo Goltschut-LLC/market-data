@@ -49,9 +49,9 @@ resource "aws_glue_crawler" "glue_crawler" {
 resource "aws_s3_bucket_object" "export_daily_ohlcv_full" {
   bucket = aws_s3_bucket.glue.id
   key    = "glue-scripts/export_daily_ohlcv_full.py"
-  source = "./glue-scripts/${var.env}.export_daily_ohlcv_full.py"
-  etag   = filemd5("./glue-scripts/${var.env}.export_daily_ohlcv_full.py")
+  content = templatefile("${path.module}/templates/export_daily_ohlcv_full.tpl", { ENV = var.env })
 }
+
 
 resource "aws_glue_job" "export_daily_ohlcv_full" {
   name     = "export-daily-ohlcv-full"
