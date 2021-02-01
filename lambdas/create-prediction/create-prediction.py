@@ -51,8 +51,8 @@ def lambda_handler(event, context):
         fig = pyplot.figure()
         ax = fig.add_subplot()
 
-        ax.plot_date(df.tail(7)['date_string'], df.tail(7)['mid_price'], ls='-', color='b')
-        ax.plot_date(pd.concat([df.tail(1)['date_string'], pd.Series(['Target Price'])]), pd.concat([df.tail(1)['mid_price'], pd.Series([df.tail(1)['mid_price']*(1+predicted_percent_change)])]), ls='--', color='g')
+        ax.plot_date(symbol_data.tail(7)['date_string'], symbol_data.tail(7)['mid_price'], ls='-', color='b')
+        ax.plot_date(pd.concat([symbol_data.tail(1)['date_string'], pd.Series(['Target Price'])]), pd.concat([symbol_data.tail(1)['mid_price'], pd.Series([symbol_data.tail(1)['mid_price']*(1+predicted_percent_change)])]), ls='--', color='g')
         ax.set_ylabel('Unadjusted Price (USD)')
         ax.set_title('Forecasted Price for Ticker ' + symbol)
 
@@ -62,7 +62,10 @@ def lambda_handler(event, context):
         for spine in ax.spines:
             ax.spines[spine].set_visible(False)
 
-        fig.savefig('s3://' + BUCKET + '/nice.png', dpi=300, orientation='landscape', transparent=True, bbox_inches='tight')
+        img_data = io.BytesIO()
+        fig.savefig(img_data, dpi=300, orientation='landscape', transparent=True, bbox_inches='tight')
+        img_data.seek(0)
+        bucket.put_object(Body=img_data, ContentType='image/png', Key='nice.png')
 
         result = { 
             'prediction': predicted_percent_change,
