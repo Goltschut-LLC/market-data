@@ -100,3 +100,17 @@ resource "aws_sfn_state_machine" "update_symbol_sfn" {
     }
   )
 }
+
+resource "aws_sfn_state_machine" "create_predictions_sfn" {
+  name     = "create-predictions"
+  role_arn = aws_iam_role.sfn_role.arn
+
+  definition = templatefile(
+    "${path.module}/templates/create-predictions.tpl",
+    {
+      RETRY_INTERVAL_SECONDS = 2,
+      MAX_ATTEMPTS           = 2,
+      BACKOFF_RATE           = 2
+    }
+  )
+}

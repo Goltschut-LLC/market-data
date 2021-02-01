@@ -171,7 +171,7 @@ resource "aws_lambda_function" "create_prediction_lambda_function" {
   function_name = "create-prediction"
   package_type  = "Image"
   role          = aws_iam_role.lambda_role.arn
-  image_uri     = var.create_prediction_lambda_docker_uri
+  image_uri     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/create-prediction:latest"
 
   timeout     = 900
   memory_size = 512
