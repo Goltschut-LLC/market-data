@@ -166,3 +166,19 @@ resource "aws_lambda_function" "get_update_symbol_payload_lambda_function" {
     security_group_ids = [aws_security_group.main_sg.id]
   }
 }
+
+resource "aws_lambda_function" "create_prediction_lambda_function" {
+  function_name = "create-prediction"
+  package_type  = "Image"
+  role          = aws_iam_role.lambda_role.arn
+  image_uri     = var.create_prediction_lambda_docker_uri
+
+  timeout     = 900
+  memory_size = 512
+  environment {
+    variables = {
+      REGION = data.aws_region.current.name
+      BUCKET = aws_s3_bucket.glue.bucket
+    }
+  }
+}

@@ -47,17 +47,17 @@ resource "aws_glue_crawler" "glue_crawler" {
 }
 
 resource "aws_s3_bucket_object" "export_daily_ohlcv_full" {
-  bucket = aws_s3_bucket.glue.id
-  key    = "glue-scripts/export_daily_ohlcv_full.py"
+  bucket  = aws_s3_bucket.glue.id
+  key     = "glue-scripts/export_daily_ohlcv_full.py"
   content = templatefile("${path.module}/templates/export_daily_ohlcv_full.tpl", { ENV = var.env })
 }
 
 
 resource "aws_glue_job" "export_daily_ohlcv_full" {
-  name     = "export-daily-ohlcv-full"
-  role_arn = aws_iam_role.glue_role.arn
+  name         = "export-daily-ohlcv-full"
+  role_arn     = aws_iam_role.glue_role.arn
   glue_version = "2.0"
-  max_retries = 3
+  max_retries  = 3
 
   connections = [
     aws_glue_connection.rds_glue_connection.name,
