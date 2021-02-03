@@ -37,13 +37,18 @@
       "Type": "Map",
       "InputPath": "$.Payload",
       "ItemsPath": "$.symbols",
-      "MaxConcurrency": 0,
+      "MaxConcurrency": 100,
+      "ResultPath": "$.Payload.symbols",
       "Iterator": {
         "StartAt": "Create Prediction",
         "States": {
           "Create Prediction": {
               "Type": "Task",
               "Resource": "arn:aws:states:::lambda:invoke",
+              "ResultSelector": {
+                "prediction.$": "$.Payload.prediction",
+                "symbol.$": "$.Payload.symbol"
+              },
               "Parameters": {
                 "FunctionName": "create-prediction:$LATEST",
                 "Payload": {

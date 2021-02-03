@@ -178,7 +178,8 @@ resource "aws_lambda_function" "create_prediction_lambda_function" {
   environment {
     variables = {
       REGION = data.aws_region.current.name
-      BUCKET = aws_s3_bucket.glue.bucket
+      EXPORTS_BUCKET = aws_s3_bucket.glue.bucket
+      PUBLIC_BUCKET = aws_s3_bucket.public.bucket
     }
   }
 }

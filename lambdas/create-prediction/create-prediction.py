@@ -10,21 +10,23 @@ from matplotlib import pyplot
 import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA
 
-BUCKET = os.getenv('BUCKET')
+EXPORTS_BUCKET = os.getenv('EXPORTS_BUCKET')
 DAILY_EXPORTS_PREFIX = 'exports/daily_ohlcv/'
 
+PUBLIC_BUCKET = os.getenv('PUBLIC_BUCKET')
+PUBLIC_PREDICTIONS_PREFIX = 'predictions/arima/'
 
 def lambda_handler(event, context):
 
-    try:
-        
-        symbol = event['Input']
+    symbol = event['Input']
+
+    try:    
 
         s3 = boto3.resource('s3')
-        bucket = s3.Bucket(BUCKET)
+        exports_bucket = s3.Bucket(EXPORTS_BUCKET)
 
-        prefix_objs = bucket.objects.filter(
-            Prefix=DAILY_EXPORTS_PREFIX + 'symbol=' + symbol
+        prefix_objs = exports_bucket.objects.filter(
+            Prefix=DAILY_EXPORTS_PREFIX + 'symbol=' + symbol + '/'
         )
 
         df = []
@@ -51,8 +53,21 @@ def lambda_handler(event, context):
         fig = pyplot.figure()
         ax = fig.add_subplot()
 
-        ax.plot_date(symbol_data.tail(7)['date_string'], symbol_data.tail(7)['mid_price'], ls='-', color='b')
-        ax.plot_date(pd.concat([symbol_data.tail(1)['date_string'], pd.Series(['Target Price'])]), pd.concat([symbol_data.tail(1)['mid_price'], pd.Series([symbol_data.tail(1)['mid_price']*(1+predicted_percent_change)])]), ls='--', color='g')
+        ax.plot_date(
+            symbol_data.tail(7)['date_string'],
+            symbol_data.tail(7)['mid_price'],
+            ls='-',
+            color='b'
+        )
+        ax.plot_date(
+            pd.concat([
+                symbol_data.tail(1)['date_string'],
+                pd.Series(['Target Price'])
+            ]), 
+            pd.concat([
+                symbol_data.tail(1)['mid_price'],
+                pd.Series([symbol_data.tail(1)['mid_price']*(1+predicted_percent_change)])
+            ]), ls='--', color='g')
         ax.set_ylabel('Unadjusted Price (USD)')
         ax.set_title('Forecasted Price for Ticker ' + symbol)
 
@@ -63,9 +78,17 @@ def lambda_handler(event, context):
             ax.spines[spine].set_visible(False)
 
         img_data = io.BytesIO()
-        fig.savefig(img_data, dpi=300, orientation='landscape', transparent=True, bbox_inches='tight')
+        fig.savefig(
+            img_data,
+            dpi=300,
+            orientation='landscape',
+            transparent=True,
+            bbox_inches='tight'
+        )
         img_data.seek(0)
-        bucket.put_object(Body=img_data, ContentType='image/png', Key='nice.png')
+
+        public_bucket = s3.Bucket(PUBLIC_BUCKET)
+        public_bucket.put_object(Body=img_data, ContentType='image/png', Key=PUBLIC_PREDICTIONS_PREFIX + 'symbol=' + symbol + '/prediction.png')
 
         result = { 
             'prediction': predicted_percent_change,
@@ -76,4 +99,10 @@ def lambda_handler(event, context):
         return result  
 
     except Exception as e:
-        print('An exception occurred while generating prediction for symbol:', symbol, str(e))
+        print(
+            'An exception occurred while generating prediction for symbol:', 
+            symbol,
+            str(e)
+        )
+        
+        return { 'prediction': None, 'symbol': symbol }
