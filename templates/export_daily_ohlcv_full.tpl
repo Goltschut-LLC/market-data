@@ -17,6 +17,6 @@ DataSource0 = glueContext.create_dynamic_frame.from_catalog(database = "main-rds
 
 Transform0 = ApplyMapping.apply(frame = DataSource0, mappings = [("volume", "int", "volume", "int"), ("timeframe", "string", "timeframe", "string"), ("symbol", "string", "symbol", "string"), ("start_time", "timestamp", "start_time", "timestamp"), ("close_price", "double", "close_price", "double"), ("high_price", "double", "high_price", "double"), ("open_price", "double", "open_price", "double"), ("low_price", "double", "low_price", "double")], transformation_ctx = "Transform0")
 
-DataSink0 = glueContext.write_dynamic_frame.from_options(frame = Transform0, connection_type = "s3", format = "csv", connection_options = {"path": "s3://aws-glue-goltschut-market-data-${ENV}/exports/daily_ohlcv/", "partitionKeys": ["symbol"]}, transformation_ctx = "DataSink0")
+DataSink0 = Transform0.toDF().write.options(header='True').mode("overwrite").format("csv").partitionBy("symbol").save("s3://aws-glue-goltschut-market-data-${ENV}/exports/daily_ohlcv/")
 
 job.commit()

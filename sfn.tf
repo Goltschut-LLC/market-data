@@ -108,9 +108,24 @@ resource "aws_sfn_state_machine" "create_predictions_sfn" {
   definition = templatefile(
     "${path.module}/templates/create-predictions.tpl",
     {
-      RETRY_INTERVAL_SECONDS = 2,
-      MAX_ATTEMPTS           = 2,
+      RETRY_INTERVAL_SECONDS = 3,
+      MAX_ATTEMPTS           = 3,
       BACKOFF_RATE           = 2
+    }
+  )
+}
+
+resource "aws_sfn_state_machine" "batch_create_predictions_sfn" {
+  name     = "batch-create-predictions"
+  role_arn = aws_iam_role.sfn_role.arn
+
+  definition = templatefile(
+    "${path.module}/templates/batch-create-predictions.tpl",
+    {
+      RETRY_INTERVAL_SECONDS = 5,
+      MAX_ATTEMPTS           = 2,
+      BACKOFF_RATE           = 2,
+      CREATE_PREDICTIONS_SFN_ARN = aws_sfn_state_machine.create_predictions_sfn.arn
     }
   )
 }

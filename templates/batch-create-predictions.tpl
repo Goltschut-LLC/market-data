@@ -1,38 +1,6 @@
 {
-  "StartAt": "Ingest Symbols",
+  "StartAt": "Get Active NYSE and NASDAQ Symbols",
   "States": {
-    "Ingest Symbols": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
-      "Parameters": {
-        "FunctionName": "ingest-symbols:$LATEST",
-        "Payload": {
-          "Input.$": "$"
-        }
-      },
-      "Retry": [
-        {
-          "Comment": "Retry function after an error occurs.",
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "IntervalSeconds": ${RETRY_INTERVAL_SECONDS},
-          "MaxAttempts": ${MAX_ATTEMPTS},
-          "BackoffRate": ${BACKOFF_RATE}
-        }
-      ],
-      "Catch": [
-        {
-          "Comment": "Catch errors and revert to fallback states.",
-          "ResultPath": "$.error-info",
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "Fallback"
-        }
-      ],
-      "Next": "Get Active NYSE and NASDAQ Symbols"
-    },
     "Get Active NYSE and NASDAQ Symbols": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
@@ -95,21 +63,21 @@
           "Next": "Fallback"
         }
       ],
-      "Next": "Update Batches"
+      "Next": "Create Predictions for Batches"
     },
-    "Update Batches": {
+    "Create Predictions for Batches": {
       "Type": "Map",
       "InputPath": "$.Payload",
       "ItemsPath": "$.batches",
       "MaxConcurrency": 0,
       "Iterator": {
-        "StartAt": "Update Batch",
+        "StartAt": "Create Predictions for Batch",
         "States": {
-          "Update Batch": {
+          "Create Predictions for Batch": {
             "Type": "Task",
             "Resource": "arn:aws:states:::states:startExecution.sync",
             "Parameters": {
-              "StateMachineArn": "${UPDATE_BATCH_SFN_ARN}",
+              "StateMachineArn": "${CREATE_PREDICTIONS_SFN_ARN}",
               "Input": {
                 "symbols.$": "$"
               }
@@ -122,7 +90,7 @@
     },
     "Fallback": {
       "Type": "Fail",
-      "Cause": "Environment update did not succeed."
+      "Cause": "Create predictions did not succeed."
     }
   }
 }
