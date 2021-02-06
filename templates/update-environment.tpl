@@ -118,6 +118,22 @@
           }
         }
       },
+      "Next": "Export Daily OHLCV Full"
+    },
+    "Export Daily OHLCV Full": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "${EXPORT_DAILY_OHLCV_GLUE_JOB_NAME}"
+      },
+      "Next": "Batch Create Predictions"
+    },
+    "Batch Create Predictions": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::states:startExecution.sync",
+      "Parameters": {
+        "StateMachineArn": "${BATCH_CREATE_PREDICTIONS_SFN_ARN}"
+      },
       "End": true
     },
     "Fallback": {

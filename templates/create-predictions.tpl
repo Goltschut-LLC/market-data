@@ -13,8 +13,7 @@
                 "Type": "Task",
                 "Resource": "arn:aws:states:::lambda:invoke",
                 "ResultSelector": {
-                  "prediction.$": "$.Payload.prediction",
-                  "symbol.$": "$.Payload.symbol"
+                  "p.$": "$.Payload.p"
                 },
                 "Parameters": {
                   "FunctionName": "create-prediction:$LATEST",

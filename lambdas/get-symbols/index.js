@@ -1,14 +1,15 @@
-const { rdsSecretName } = require("./config");
+const { env, rdsSecretName } = require("./config");
 const mysql = require("mysql2/promise");
 const Credentials = require("./get-credentials");
 
+const DEFAULT_LIMIT = env === "prod" ? 10000 : 10;
 const DEFAULT_STATUSES = ["active"];
 const DEFAULT_EXCHANGES = ["NYSE", "NASDAQ"];
 
 exports.handler = async (event) => {
   console.log("Handler called with event:", event);
 
-  const { exchanges, statuses } = event.Input.Payload || {};
+  const { exchanges, statuses, limit } = event.Input.Payload || {};
 
   console.log("Getting RDS credentials");
   const { host, user, password, database } = await Credentials.get(
@@ -37,7 +38,9 @@ exports.handler = async (event) => {
   console.log("Closing RDS connection");
   await conn.end();
 
-  const symbols = rows.map((row) => row.symbol);
+  const symbols = rows
+    .map((row) => row.symbol)
+    .slice(0, limit || DEFAULT_LIMIT);
 
   return { symbols };
 };

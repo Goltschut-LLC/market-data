@@ -64,10 +64,12 @@ resource "aws_sfn_state_machine" "update_environment_sfn" {
   definition = templatefile(
     "${path.module}/templates/update-environment.tpl",
     {
-      RETRY_INTERVAL_SECONDS = 2,
-      MAX_ATTEMPTS           = 2,
-      BACKOFF_RATE           = 2,
-      UPDATE_BATCH_SFN_ARN   = aws_sfn_state_machine.update_batch_sfn.arn
+      RETRY_INTERVAL_SECONDS           = 5,
+      MAX_ATTEMPTS                     = 3,
+      BACKOFF_RATE                     = 2,
+      UPDATE_BATCH_SFN_ARN             = aws_sfn_state_machine.update_batch_sfn.arn
+      EXPORT_DAILY_OHLCV_GLUE_JOB_NAME = aws_glue_job.export_daily_ohlcv_full.id
+      BATCH_CREATE_PREDICTIONS_SFN_ARN = aws_sfn_state_machine.batch_create_predictions_sfn.arn
     }
   )
 }
@@ -122,9 +124,9 @@ resource "aws_sfn_state_machine" "batch_create_predictions_sfn" {
   definition = templatefile(
     "${path.module}/templates/batch-create-predictions.tpl",
     {
-      RETRY_INTERVAL_SECONDS = 5,
-      MAX_ATTEMPTS           = 2,
-      BACKOFF_RATE           = 2,
+      RETRY_INTERVAL_SECONDS     = 5,
+      MAX_ATTEMPTS               = 2,
+      BACKOFF_RATE               = 2,
       CREATE_PREDICTIONS_SFN_ARN = aws_sfn_state_machine.create_predictions_sfn.arn
     }
   )

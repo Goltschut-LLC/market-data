@@ -87,6 +87,7 @@ resource "aws_lambda_function" "get_symbols_lambda_function" {
 
   environment {
     variables = {
+      ENV             = var.env
       REGION          = data.aws_region.current.name
       RDS_SECRET_NAME = var.rds_secret_name
     }
@@ -177,9 +178,9 @@ resource "aws_lambda_function" "create_prediction_lambda_function" {
   memory_size = 512
   environment {
     variables = {
-      REGION = data.aws_region.current.name
+      REGION         = data.aws_region.current.name
       EXPORTS_BUCKET = aws_s3_bucket.glue.bucket
-      PUBLIC_BUCKET = aws_s3_bucket.public.bucket
+      PUBLIC_BUCKET  = aws_s3_bucket.public.bucket
     }
   }
 }

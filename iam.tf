@@ -26,7 +26,11 @@ data "aws_iam_policy_document" "sfn_iam_policy" {
       "states:StopExecution",
       "events:PutTargets",
       "events:PutRule",
-      "events:DescribeRule"
+      "events:DescribeRule",
+      "glue:StartJobRun",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:BatchStopJobRun"
     ]
     resources = [
       "*",

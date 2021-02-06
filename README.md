@@ -32,3 +32,4 @@ bash scripts/deploy.sh dev
 ```sh
 bash scripts/deploy.sh dev
 ```
+9. Deploy ECR image for create-prediction Lambda
