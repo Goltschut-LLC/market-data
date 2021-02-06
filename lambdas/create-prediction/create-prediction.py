@@ -68,8 +68,7 @@ def lambda_handler(event, context):
                 symbol_data.tail(1)['mid_price'],
                 pd.Series([symbol_data.tail(1)['mid_price']*(1+predicted_percent_change)])
             ]), ls='--', color='g')
-        ax.set_ylabel('Unadjusted Price (USD)')
-        ax.set_title('Forecasted Price for Ticker ' + symbol)
+        ax.set_ylabel('Unadjusted Price $USD')
 
         for tick in ax.get_xticklabels():
             tick.set_rotation(45)
@@ -91,8 +90,8 @@ def lambda_handler(event, context):
         public_bucket.put_object(Body=img_data, ContentType='image/png', Key=PUBLIC_PREDICTIONS_PREFIX + 'symbol=' + symbol + '/prediction.png')
 
         result = { 
-            'prediction': predicted_percent_change,
-            'symbol': symbol 
+            'p': "%.3f" % predicted_percent_change,
+            's': symbol 
         }
 
         print(str(result))
@@ -105,4 +104,4 @@ def lambda_handler(event, context):
             str(e)
         )
         
-        return { 'prediction': None, 'symbol': symbol }
+        return { 'p': None, 's': symbol }
