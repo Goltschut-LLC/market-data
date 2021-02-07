@@ -1,5 +1,5 @@
 # Standard
-import io
+from io import BytesIO, StringIO
 import json
 from math import sqrt
 import os
@@ -34,7 +34,7 @@ def lambda_handler(event, context):
         for obj in prefix_objs:
             key = obj.key
             body = obj.get()['Body'].read()
-            temp = pd.read_csv(io.BytesIO(body), encoding='utf8')        
+            temp = pd.read_csv(BytesIO(body), encoding='utf8')        
             df.append(temp)
 
         df = pd.concat(df)
@@ -68,8 +68,7 @@ def lambda_handler(event, context):
                 symbol_data.tail(1)['mid_price'],
                 pd.Series([symbol_data.tail(1)['mid_price']*(1+predicted_percent_change)])
             ]), ls='--', color='g')
-        ax.set_ylabel('Unadjusted Price (USD)')
-        ax.set_title('Forecasted Price for Ticker ' + symbol)
+        ax.set_ylabel('Unadjusted Price $USD')
 
         for tick in ax.get_xticklabels():
             tick.set_rotation(45)
@@ -77,7 +76,7 @@ def lambda_handler(event, context):
         for spine in ax.spines:
             ax.spines[spine].set_visible(False)
 
-        img_data = io.BytesIO()
+        img_data = BytesIO()
         fig.savefig(
             img_data,
             dpi=300,
@@ -90,9 +89,15 @@ def lambda_handler(event, context):
         public_bucket = s3.Bucket(PUBLIC_BUCKET)
         public_bucket.put_object(Body=img_data, ContentType='image/png', Key=PUBLIC_PREDICTIONS_PREFIX + 'symbol=' + symbol + '/prediction.png')
 
+        json_df = symbol_data.tail(7)
+        json_df['predicted_percent_change'] = predicted_percent_change
+        json_buffer = StringIO()
+        json_df.reset_index().to_json(json_buffer)
+        public_bucket.put_object(Body=json_buffer.getvalue(), Key=PUBLIC_PREDICTIONS_PREFIX + 'symbol=' + symbol + '/prediction.json')
+
         result = { 
-            'prediction': predicted_percent_change,
-            'symbol': symbol 
+            'p': "%.3f" % predicted_percent_change,
+            's': symbol 
         }
 
         print(str(result))
@@ -105,4 +110,4 @@ def lambda_handler(event, context):
             str(e)
         )
         
-        return { 'prediction': None, 'symbol': symbol }
+        return { 'p': None, 's': symbol }
