@@ -6,7 +6,13 @@ variable "project_name" {
   type = string
 }
 
+# Shared across accounts
 variable "domain_name" {
+  type = string
+}
+
+# Environment specific
+variable "env_domain_name" {
   type = string
 }
 

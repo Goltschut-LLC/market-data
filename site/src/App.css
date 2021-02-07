@@ -46,7 +46,7 @@
 .Search input {
   border-bottom:solid blue 4px;
   margin-left: 1em;
-  width: 210px;
+  width: 190px;
 }
 
 .Search-text {
@@ -55,18 +55,20 @@
 }
 
 .Prediction-figure {
-  height: 69%;
-  width: 42.0%;
+  height: 80%;
 }
 
 .Modal-content {
   position: absolute;
-  top: 25%;
-  left: 25%;
-  width: 50%;
-  text-align: center;
+  top: 10%;
+  left: 10%;
+  width: 80%;
   background-color: cornsilk;
   padding: 1em;
+}
+
+.Disqus {
+  padding: 2em;
 }
 
 @keyframes App-logo-spin {
