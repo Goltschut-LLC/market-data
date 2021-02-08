@@ -44,18 +44,16 @@
 }
 
 .Search input {
-  border-bottom:solid blue 4px;
-  margin-left: 1em;
+  margin-left: 0.5em;
   width: 190px;
 }
 
 .Search-text {
-  border: none;
   font-size: 42px;
 }
 
-.Prediction-figure {
-  height: 80%;
+.Chart-container {
+  padding: 2em;
 }
 
 .Modal-content {

@@ -13,10 +13,8 @@ resource "aws_s3_bucket" "public" {
   }
 
   cors_rule {
-    allowed_headers = ["*"]
     allowed_methods = ["GET"]
     allowed_origins = ["*"]
-    max_age_seconds = 3000
   }
 }
 

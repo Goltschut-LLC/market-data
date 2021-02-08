@@ -15,27 +15,20 @@ const PredictionFigure = ({ ticker }) => {
   const initialPredictionJSON = {
     index: {},
     predicted_percent_change: [],
-  }
+  };
   const [predictionJSON, setPredictionJSON] = useState(initialPredictionJSON);
   const chartContainer = useRef(null);
   const [chartInstance, setChartInstance] = useState(null);
 
   useEffect(() => {
     getPredictionJson();
-    console.log(
-      Object.keys(predictionJSON["index"]).map(
-        (i) => predictionJSON["date_string"][i]
-      )
-    );
-    console.log(
-      Object.keys(predictionJSON["index"]).map(
-        (i) => predictionJSON["mid_price"][i]
-      )
-    );
   }, [ticker]);
 
   useEffect(() => {
     if (chartContainer && chartContainer.current) {
+      if(chartInstance){
+        chartInstance.destroy()
+      }
       const newChartInstance = new Chartjs(chartContainer.current, chartConfig);
       setChartInstance(newChartInstance);
     }
@@ -67,6 +60,9 @@ const PredictionFigure = ({ ticker }) => {
   const mid_prices = Object.keys(predictionJSON["index"]).map(
     (i) => predictionJSON["mid_price"][i]
   );
+  const volumes = Object.keys(predictionJSON["index"]).map(
+    (i) => predictionJSON["volume"][i]
+  );
   // Should be same across all items
   const predicted_percent_change =
     predictionJSON["predicted_percent_change"][0];
@@ -78,13 +74,14 @@ const PredictionFigure = ({ ticker }) => {
   const buffer = 0.1 * mid_price_range;
 
   const chartConfig = {
-    type: "line",
-    responsive: true,
+    type: "bar",
     data: {
-      labels: [...date_strings, "Target Price"],
+      labels: [...date_strings, "Forecast"],
       datasets: [
         {
-          label: "Unadjusted Price in $USD",
+          type: "line",
+          label: "Stock Price",
+          yAxisID: "Price",
           data: [...mid_prices, target_price],
           pointRadius: [
             ...Object.keys(predictionJSON["index"]).map(() => 6),
@@ -97,12 +94,19 @@ const PredictionFigure = ({ ticker }) => {
           pointBorderColor: [
             ...Object.keys(predictionJSON["index"]).map(
               () => "rgba(127, 229, 240, 1)"
-            ),
-            "rgba(0, 0, 0, 1)",
-          ],
-          backgroundColor: ["rgba(127, 229, 240, 0.69)"],
-          borderColor: ["rgba(255, 99, 132, 1)"],
-          borderWidth: 1,
+              ),
+              "rgba(0, 0, 0, 1)",
+            ],
+            backgroundColor: ["rgba(127, 229, 240, 0.69)"],
+            borderColor: ["rgba(255, 99, 132, 1)"],
+            borderWidth: 1,
+          },
+        {
+          type: "bar",
+          label: "Volume",
+          yAxisID: "Volume",
+          data: [...volumes],
+          backgroundColor: "rgba(252, 81, 133, 0.69)",
         },
       ],
     },
@@ -110,19 +114,34 @@ const PredictionFigure = ({ ticker }) => {
       tooltips: {
         callbacks: {
           label: function (tooltipItem, data) {
-            return (
-              `$${Number(tooltipItem.yLabel).toFixed(2)}`
-            );
+            return `$${Number(tooltipItem.yLabel).toFixed(2)}`;
           },
         },
+        callbacks: {
+          label: function (tooltipItem, d) {
+              if (tooltipItem.datasetIndex === 0) {
+                  return `Price: $${Number(tooltipItem.yLabel).toFixed(2)}`
+              } else if (tooltipItem.datasetIndex === 1) {
+                  return `Volume: ${tooltipItem.yLabel}`;
+              }
+          }
+      }
       },
       scales: {
         yAxes: [
           {
+            id: "Price",
+            type: "linear",
+            position: "left",
             ticks: {
               suggestedMin: min_mid_price - buffer,
               suggestedMax: max_mid_price + buffer,
             },
+          },
+          {
+            id: "Volume",
+            type: "linear",
+            position: "right",
           },
         ],
       },
@@ -130,8 +149,8 @@ const PredictionFigure = ({ ticker }) => {
   };
 
   return (
-    <div className="Prediction-figure">
-      <canvas ref={chartContainer}/>
+    <div className="Chart-container">
+      <canvas ref={chartContainer}></canvas>
     </div>
   );
 };
