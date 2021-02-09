@@ -13,6 +13,7 @@ resource "aws_s3_bucket" "public" {
   }
 
   cors_rule {
+    allowed_headers = [ "Cache-Control" ]
     allowed_methods = ["GET"]
     allowed_origins = ["*"]
   }

@@ -26,8 +26,8 @@ const PredictionFigure = ({ ticker }) => {
 
   useEffect(() => {
     if (chartContainer && chartContainer.current) {
-      if(chartInstance){
-        chartInstance.destroy()
+      if (chartInstance) {
+        chartInstance.destroy();
       }
       const newChartInstance = new Chartjs(chartContainer.current, chartConfig);
       setChartInstance(newChartInstance);
@@ -35,20 +35,23 @@ const PredictionFigure = ({ ticker }) => {
   }, [chartContainer, predictionJSON]);
 
   const getPredictionJson = async () => {
+    const options = {
+      hostname: "goltschut-market-data-prod-public.s3.amazonaws.com",
+      path: `/predictions/arima/symbol%3D${ticker}/prediction.json`,
+      headers: {"Cache-Control": "max-age=60"},
+    };
+
     https
-      .get(
-        `https://goltschut-market-data-prod-public.s3.amazonaws.com/predictions/arima/symbol%3D${ticker}/prediction.json`,
-        (res) => {
-          res.on("data", (d) => {
-            try {
-              setPredictionJSON(JSON.parse(d));
-            } catch (e) {
-              console.log("Unable to getPredictionJson for ticker.");
-              setPredictionJSON(initialPredictionJSON);
-            }
-          });
-        }
-      )
+      .get(options, (res) => {
+        res.on("data", (d) => {
+          try {
+            setPredictionJSON(JSON.parse(d));
+          } catch (e) {
+            console.log("Unable to getPredictionJson for ticker.");
+            setPredictionJSON(initialPredictionJSON);
+          }
+        });
+      })
       .on("error", (e) => {
         console.error(e);
       });
@@ -85,7 +88,7 @@ const PredictionFigure = ({ ticker }) => {
           data: [...mid_prices, target_price],
           pointRadius: [
             ...Object.keys(predictionJSON["index"]).map(() => 6),
-            24,
+            12,
           ],
           pointStyle: [
             ...Object.keys(predictionJSON["index"]).map(() => "circle"),
@@ -94,13 +97,13 @@ const PredictionFigure = ({ ticker }) => {
           pointBorderColor: [
             ...Object.keys(predictionJSON["index"]).map(
               () => "rgba(127, 229, 240, 1)"
-              ),
-              "rgba(0, 0, 0, 1)",
-            ],
-            backgroundColor: ["rgba(127, 229, 240, 0.69)"],
-            borderColor: ["rgba(255, 99, 132, 1)"],
-            borderWidth: 1,
-          },
+            ),
+            "rgba(0, 0, 0, 1)",
+          ],
+          backgroundColor: ["rgba(127, 229, 240, 0.69)"],
+          borderColor: ["rgba(255, 99, 132, 1)"],
+          borderWidth: 1,
+        },
         {
           type: "bar",
           label: "Volume",
@@ -119,13 +122,13 @@ const PredictionFigure = ({ ticker }) => {
         },
         callbacks: {
           label: function (tooltipItem, d) {
-              if (tooltipItem.datasetIndex === 0) {
-                  return `Price: $${Number(tooltipItem.yLabel).toFixed(2)}`
-              } else if (tooltipItem.datasetIndex === 1) {
-                  return `Volume: ${tooltipItem.yLabel}`;
-              }
-          }
-      }
+            if (tooltipItem.datasetIndex === 0) {
+              return `Price: $${Number(tooltipItem.yLabel).toFixed(2)}`;
+            } else if (tooltipItem.datasetIndex === 1) {
+              return `Volume: ${tooltipItem.yLabel}`;
+            }
+          },
+        },
       },
       scales: {
         yAxes: [

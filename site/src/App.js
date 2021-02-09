@@ -5,7 +5,6 @@ import Search from "./Search";
 import PredictionFigure from "./PredictionFigure";
 import Disqus from "./Disqus";
 import ReactGA from 'react-ga';
-import AdSense from 'react-adsense';
 const querystring = require('querystring');
 
 ReactGA.initialize('UA-181672128-4');
@@ -26,10 +25,6 @@ const App = () => {
       <Search activeTicker={activeTicker} setActiveTicker={event => setActiveTicker(event.target.value.toUpperCase())}/>
       <PredictionFigure ticker={activeTicker} />
       <Disqus ticker={activeTicker} />
-      <AdSense.Google
-        client='ca-pub-9474581468737198'
-        // slot='8XXXXX1'
-      />
     </div>
   );
 }
