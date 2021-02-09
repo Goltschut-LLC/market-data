@@ -7,6 +7,10 @@ resource "aws_s3_bucket" "public" {
   bucket = "${var.project_name}-${var.env}-public"
   acl    = "public-read"
 
+  versioning {
+    enabled = true
+  }
+
   website {
     index_document = "index.html"
     error_document = "404.html"
