@@ -31,7 +31,7 @@ resource "aws_lambda_function" "ingest_symbols_lambda_function" {
   handler       = "index.handler"
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs12.x"
-  timeout       = 30
+  timeout       = 900
 
   environment {
     variables = {
