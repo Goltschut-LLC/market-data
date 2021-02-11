@@ -5,6 +5,8 @@ const Disqus = ({ ticker }) => {
 
     return (
         <div className="Disqus">
+            <h2>Discussion for ticker {ticker}</h2>
+            <h3>Resets every night</h3>
             <DiscussionEmbed
                 shortname='GOMFD'
                 config={

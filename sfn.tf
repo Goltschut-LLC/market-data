@@ -64,9 +64,9 @@ resource "aws_sfn_state_machine" "update_environment_sfn" {
   definition = templatefile(
     "${path.module}/templates/update-environment.tpl",
     {
-      RETRY_INTERVAL_SECONDS           = 5,
-      MAX_ATTEMPTS                     = 3,
-      BACKOFF_RATE                     = 2,
+      RETRY_INTERVAL_SECONDS           = 10,
+      MAX_ATTEMPTS                     = 6,
+      BACKOFF_RATE                     = 1,
       UPDATE_BATCH_SFN_ARN             = aws_sfn_state_machine.update_batch_sfn.arn
       EXPORT_DAILY_OHLCV_GLUE_JOB_NAME = aws_glue_job.export_daily_ohlcv_full.id
       BATCH_CREATE_PREDICTIONS_SFN_ARN = aws_sfn_state_machine.batch_create_predictions_sfn.arn

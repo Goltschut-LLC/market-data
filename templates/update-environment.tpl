@@ -131,6 +131,7 @@
     "Batch Create Predictions": {
       "Type": "Task",
       "Resource": "arn:aws:states:::states:startExecution.sync",
+      "ResultPath": null,
       "Parameters": {
         "StateMachineArn": "${BATCH_CREATE_PREDICTIONS_SFN_ARN}"
       },

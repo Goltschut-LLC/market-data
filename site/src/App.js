@@ -5,6 +5,7 @@ import Search from "./Search";
 import PredictionFigure from "./PredictionFigure";
 import Disqus from "./Disqus";
 import ReactGA from 'react-ga';
+import ad from './static/your-ad-here.gif';
 const querystring = require('querystring');
 
 ReactGA.initialize('UA-181672128-4');
@@ -25,6 +26,7 @@ const App = () => {
       <Search activeTicker={activeTicker} setActiveTicker={event => setActiveTicker(event.target.value.toUpperCase())}/>
       <PredictionFigure ticker={activeTicker} />
       <Disqus ticker={activeTicker} />
+      <img src={ad} alt="Your ad here" className="Ad-banner" />
     </div>
   );
 }
