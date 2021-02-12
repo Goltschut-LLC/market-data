@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import Meta from './Meta';
 import Navbar from "./Navbar";
 import Search from "./Search";
 import PredictionFigure from "./PredictionFigure";
@@ -19,14 +20,27 @@ const App = () => {
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
 
   useEffect(() => alert("Disclaimer: Information provided on this site is not financial advice.\n\nInvest at your own risk."), []);
+  useEffect(() => {
+    const url = window.location.href;
+    const urlParts = url.split('?');
+    if (urlParts.length > 0) {
+        const baseUrl = urlParts[0];
+        const updatedQueryString = '?t=' + activeTicker 
+        const updatedUri = baseUrl + updatedQueryString;
+        window.history.replaceState({}, document.title, updatedUri);
+    }
+  }, [activeTicker]);
 
   return (
     <div className="App">
+      <Meta ticker={activeTicker} />
       <Navbar aboutModalOpen={aboutModalOpen} setAboutModalOpen={setAboutModalOpen}/>
       <Search activeTicker={activeTicker} setActiveTicker={event => setActiveTicker(event.target.value.toUpperCase())}/>
       <PredictionFigure ticker={activeTicker} />
       <Disqus ticker={activeTicker} />
-      <img src={ad} alt="Your ad here" className="Ad-banner" />
+      <a href="https://www.goltschut.com/contact" target="_blank" rel="noopener noreferrer">
+        <img src={ad} alt="Your ad here" className="Ad-banner" />
+      </a>
     </div>
   );
 }

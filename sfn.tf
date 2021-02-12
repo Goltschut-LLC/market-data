@@ -124,9 +124,9 @@ resource "aws_sfn_state_machine" "batch_create_predictions_sfn" {
   definition = templatefile(
     "${path.module}/templates/batch-create-predictions.tpl",
     {
-      RETRY_INTERVAL_SECONDS     = 5,
-      MAX_ATTEMPTS               = 2,
-      BACKOFF_RATE               = 2,
+      RETRY_INTERVAL_SECONDS     = 10,
+      MAX_ATTEMPTS               = 6,
+      BACKOFF_RATE               = 1,
       CREATE_PREDICTIONS_SFN_ARN = aws_sfn_state_machine.create_predictions_sfn.arn
     }
   )
