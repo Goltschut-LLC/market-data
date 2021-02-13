@@ -115,6 +115,8 @@ const PredictionFigure = ({ ticker }) => {
             if (tooltipItem.datasetIndex === 0) {
               return `Price: $${Number(tooltipItem.yLabel).toFixed(2)}`;
             } else if (tooltipItem.datasetIndex === 1) {
+              return `Forecasted Price: $${Number(tooltipItem.yLabel).toFixed(2)}`;
+            } else if (tooltipItem.datasetIndex === 2) {
               return `Volume: ${tooltipItem.yLabel}`;
             }
           },
