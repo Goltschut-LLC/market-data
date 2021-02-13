@@ -7,7 +7,7 @@ const Meta = ({ ticker }) => {
   const baseUrl = urlParts[0];
   const updatedQueryString = '?t=' + ticker 
   const formattedUrl = baseUrl + updatedQueryString;
-  const ogImage = `http://goltschut-market-data-prod-public.s3.amazonaws.com/predictions/arima/symbol%3D${ticker}/prediction.png`
+  const ogImage = `http://goltschut-market-data-prod-public.s3.amazonaws.com/predictions/arima/symbol%3D${ticker}/prediction.jpg`
 
   return (
     <div>

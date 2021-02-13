@@ -69,6 +69,7 @@
       "Type": "Map",
       "InputPath": "$.Payload",
       "ItemsPath": "$.batches",
+      "ResultPath": null,
       "MaxConcurrency": 0,
       "Iterator": {
         "StartAt": "Create Predictions for Batch",

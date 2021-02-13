@@ -43,12 +43,23 @@ def lambda_handler(event, context):
         df['percent_change'] = (df['close_price'] - df['open_price'])/df['open_price']
         df['mid_price_volume_product'] = df['mid_price'] * df['volume']
         df['date_string'] = df['start_time'].apply(lambda start_time: start_time[:10])
-
         symbol_data = df.sort_values(by=['start_time'])
-        X = symbol_data['percent_change'].values
-        model = ARIMA(X, order=[5,1,0])
-        model_fit = model.fit()
-        predicted_percent_change = model_fit.forecast()[0]
+
+        predicted_percent_changes = []
+
+        # Iteratively generate predictions for last 7 records
+        for i in range(7)[::-1]:
+            if i > 0:
+                train = symbol_data[:-i]
+            else:
+                train = symbol_data
+            X = train['percent_change'].values
+            model = ARIMA(X, order=[5,1,0])
+            model_fit = model.fit()
+            predicted_percent_changes.append(model_fit.forecast()[0])
+
+        # Get most recent prediction for image generation
+        predicted_percent_change = predicted_percent_changes[-1]
 
         fig = pyplot.figure()
         ax = fig.add_subplot()
@@ -81,16 +92,16 @@ def lambda_handler(event, context):
             img_data,
             dpi=300,
             orientation='landscape',
-            transparent=True,
+            transparent=False,
             bbox_inches='tight'
         )
         img_data.seek(0)
 
         public_bucket = s3.Bucket(PUBLIC_BUCKET)
-        public_bucket.put_object(Body=img_data, ContentType='image/png', Key=PUBLIC_PREDICTIONS_PREFIX + 'symbol=' + symbol + '/prediction.png')
+        public_bucket.put_object(Body=img_data, ContentType='image/jpeg', Key=PUBLIC_PREDICTIONS_PREFIX + 'symbol=' + symbol + '/prediction.jpg')
 
         json_df = symbol_data.tail(7)
-        json_df['predicted_percent_change'] = predicted_percent_change
+        json_df['predicted_percent_change'] = predicted_percent_changes
         json_buffer = StringIO()
         json_df.reset_index().to_json(json_buffer)
         public_bucket.put_object(Body=json_buffer.getvalue(), Key=PUBLIC_PREDICTIONS_PREFIX + 'symbol=' + symbol + '/prediction.json')

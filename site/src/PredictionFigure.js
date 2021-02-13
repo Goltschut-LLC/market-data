@@ -3,14 +3,6 @@ import Chartjs from "chart.js";
 import "./App.css";
 const https = require("https");
 
-{
-  /* <img 
-    className="Prediction-figure"
-    src={`https://goltschut-market-data-prod-public.s3.amazonaws.com/predictions/arima/symbol%3D${ticker}/prediction.png`}
-    alt={`Prediction figure for ticker "${ticker}" not found`}
-/> */
-}
-
 const PredictionFigure = ({ ticker }) => {
   const initialPredictionJSON = {
     index: {},
@@ -66,49 +58,47 @@ const PredictionFigure = ({ ticker }) => {
   const volumes = Object.keys(predictionJSON["index"]).map(
     (i) => predictionJSON["volume"][i]
   );
-  // Should be same across all items
-  const predicted_percent_change =
-    predictionJSON["predicted_percent_change"][0];
-  const target_price =
-    (1 + predicted_percent_change) * mid_prices[mid_prices.length - 1];
-  const min_mid_price = Math.min(...mid_prices);
-  const max_mid_price = Math.max(...mid_prices);
-  const mid_price_range = Math.abs(max_mid_price - min_mid_price);
-  const buffer = 0.1 * mid_price_range;
+  const predicted_percent_changes = Object.keys(predictionJSON["index"]).map(
+    (i) => predictionJSON["predicted_percent_change"][i]
+  );
+  const predicted_prices = mid_prices.map(
+    (mp, i) => (1 + predicted_percent_changes[i]) * mp
+  );
+
+  const min_price = Math.min(...mid_prices, ...predicted_prices);
+  const max_price = Math.max(...mid_prices, ...predicted_prices);
+  const price_range = Math.abs(max_price - min_price);
+  const buffer = 0.1 * price_range;
 
   const chartConfig = {
     type: "bar",
     data: {
-      labels: [...date_strings, "Forecast"],
+      labels: [...date_strings.slice(1), "Forecast"],
       datasets: [
         {
           type: "line",
-          label: "Stock Price",
+          label: "Actual Price",
           yAxisID: "Price",
-          data: [...mid_prices, target_price],
-          pointRadius: [
-            ...Object.keys(predictionJSON["index"]).map(() => 6),
-            12,
-          ],
-          pointStyle: [
-            ...Object.keys(predictionJSON["index"]).map(() => "circle"),
-            "crossRot",
-          ],
-          pointBorderColor: [
-            ...Object.keys(predictionJSON["index"]).map(
-              () => "rgba(127, 229, 240, 1)"
-            ),
-            "rgba(0, 0, 0, 1)",
-          ],
+          data: [...mid_prices.slice(1), null],
           backgroundColor: ["rgba(127, 229, 240, 0.69)"],
           borderColor: ["rgba(255, 99, 132, 1)"],
+          borderWidth: 1,
+        },
+        {
+          type: "line",
+          label: "Predicted Price",
+          yAxisID: "Price",
+          data: [...predicted_prices],
+          fill: false,
+          borderColor: ["rgba(0, 0, 0, 1)"],
+          borderDash: [10,10],
           borderWidth: 1,
         },
         {
           type: "bar",
           label: "Volume",
           yAxisID: "Volume",
-          data: [...volumes],
+          data: [...volumes.slice(1), null],
           backgroundColor: "rgba(252, 81, 133, 0.69)",
         },
       ],
@@ -137,8 +127,8 @@ const PredictionFigure = ({ ticker }) => {
             type: "linear",
             position: "left",
             ticks: {
-              suggestedMin: min_mid_price - buffer,
-              suggestedMax: max_mid_price + buffer,
+              suggestedMin: min_price - buffer,
+              suggestedMax: max_price + buffer,
             },
           },
           {
