@@ -1,3 +1,5 @@
+![Site Screenshot]("site-screenshot.png")
+
 # Getting started
 
 1. Create S3 bucket for storing TF state
@@ -33,3 +35,8 @@ bash scripts/deploy.sh dev
 bash scripts/deploy.sh dev
 ```
 9. Deploy ECR image for create-prediction Lambda
+
+# Cleanup
+```
+bash scripts/destroy.sh dev
+```
