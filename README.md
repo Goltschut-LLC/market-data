@@ -1,4 +1,4 @@
-![Site Screenshot]("site-screenshot.png")
+![Site Screenshot]("https://github.com/Goltschut-LLC/market-data/blob/main/site-screenshot.png")
 
 # Getting started
 
