@@ -1,5 +1,13 @@
 ![Site Screenshot](./site-screenshot.png?raw=true)
 
+# What is this?
+This was a past project of mine. This system produces periodic stock market forecasts using ARIMA forecasting. These are basic forecasts, and they shy in comparison to more advanced forecasting methods. This code can be augmented to include additional features, or to use alternative algorithms.
+
+# Underlying Technology
+AWS - Lambda, S3, Glue, RDS, VPC
+Terraform - IAC/State Control
+Alpaca - Financial API
+
 # Getting started
 
 1. Create S3 bucket for storing TF state
